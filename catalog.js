@@ -1,19 +1,38 @@
-/* ESG — catalog rendering + filter tabs (CSS-only active animation) */
+/* ESG - catalog rendering + filter tabs (CSS-only active animation) */
 (function () {
   "use strict";
 
   var T = {
     ka: { all: "ყველა", quote: "ფასის მოთხოვნა", details: "დეტალურად", pack: "დაფასოება · კოდი",
-          shampoo: "ავტოშამპუნი", biskonto: "ბისკონტო ავტოშამპუნი", cosmetics: "ავტოკოსმეტიკა", liter: "ლ", showing: "ნაჩვენებია", sizes: "მოცულობები" },
+          shampoo: "ავტოშამპუნი", biskonto: "ბისკონტო ავტოშამპუნი", cosmetics: "ავტოკოსმეტიკა",
+          equipment: "აღჭურვილობა", cloths: "ტილოები", household: "საყოფაცხოვრებო", code: "კოდი", liter: "ლ", showing: "ნაჩვენებია", sizes: "მოცულობები" },
     en: { all: "All", quote: "Request a quote", details: "View details", pack: "Packaging · Code",
-          shampoo: "Shampoo", biskonto: "Biskonto Shampoo", cosmetics: "Auto-cosmetics", liter: "L", showing: "Showing", sizes: "Sizes" }
+          shampoo: "Shampoo", biskonto: "Biskonto Shampoo", cosmetics: "Auto-cosmetics",
+          equipment: "Equipment", cloths: "Cloths", household: "Household", code: "Code", liter: "L", showing: "Showing", sizes: "Sizes" }
   };
 
   /* badge label shown on each card / stage, keyed by category id */
   function catLabelFor(cat, t) {
     if (cat === "shampoo") return t.shampoo;
     if (cat === "biskonto") return t.biskonto;
+    if (cat === "equipment") return t.equipment;
+    if (cat === "cloths") return t.cloths;
+    if (cat === "household") return t.household;
     return t.cosmetics;
+  }
+
+  /* resolve a product's subcategory display name (equipment) */
+  function subNameFor(p, lang) {
+    var cats = window.ESG_CATEGORIES || [];
+    for (var i = 0; i < cats.length; i++) {
+      if (cats[i].id === p.cat && cats[i].subs) {
+        var subs = cats[i].subs;
+        for (var j = 0; j < subs.length; j++) {
+          if (subs[j].id === p.sub) return subs[j].name[lang];
+        }
+      }
+    }
+    return "";
   }
 
   /* format a litre value: Georgian uses a comma decimal (0,5), English a dot (0.5) */
@@ -25,11 +44,40 @@
   function svgDrop() {
     return '<svg class="icon" viewBox="0 0 24 24"><path d="M12 2s7 6.7 7 12a7 7 0 0 1-14 0c0-5.3 7-12 7-12z"/></svg>';
   }
+  function svgSpec() {
+    return '<svg class="icon" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>';
+  }
   function svgArrow() {
     return '<svg class="icon" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   }
 
+  /* ---- equipment card (hardware: no dilution / no liters) ---- */
+  function equipmentCardHTML(p, lang) {
+    var t = T[lang];
+    var subLabel = subNameFor(p, lang) || catLabelFor(p.cat, t);
+    var href = "product.html?slug=" + encodeURIComponent(p.slug);
+    var name = p.name[lang];
+    return (
+      '<article class="pc ' + p.cat + '" data-cat="' + p.cat + '" data-sub="' + (p.sub || "") + '">' +
+        '<a class="pc-link" href="' + href + '" aria-label="' + name + '"></a>' +
+        '<div class="bar"></div>' +
+        '<div class="stage eq">' +
+          '<span class="cat"><span class="d"></span>' + subLabel + "</span>" +
+          '<div class="shots"><img class="shot on" src="' + p.img + '" alt="' + name + '" loading="lazy" /></div>' +
+        "</div>" +
+        '<div class="body">' +
+          "<h3>" + name + "</h3>" +
+          (p.blurb ? '<p class="blurb">' + p.blurb[lang] + "</p>" : "") +
+          (p.spec ? '<span class="chip eq-spec">' + svgSpec() + p.spec[lang] + "</span>" : "") +
+          (p.code ? '<div class="eq-code">' + t.code + ' · <span class="cd">#' + p.code + "</span></div>" : "") +
+          '<div class="quote"><a class="pc-cta" href="' + href + '">' + t.details + svgArrow() + "</a></div>" +
+        "</div>" +
+      "</article>"
+    );
+  }
+
   function cardHTML(p, lang) {
+    if (p.cat === "equipment" || p.cat === "cloths") return equipmentCardHTML(p, lang);
     var t = T[lang];
     var catLabel = catLabelFor(p.cat, t);
     var stageAttr = "", stageStyle = "";
@@ -39,7 +87,7 @@
     }
     var href = "product.html?slug=" + encodeURIComponent(p.slug);
 
-    /* sizes largest → smallest (5 · 1 · 0.5) — drives the photos, dots and chips */
+    /* sizes largest → smallest (5 · 1 · 0.5) - drives the photos, dots and chips */
     var ordered = (p.sizes || []).slice();
     if (!p.keepOrder) ordered.sort(function (a, b) { return b.l - a.l; });
     var multi = ordered.length > 1;
@@ -57,7 +105,7 @@
         "</div>"
       : "";
 
-    /* size chips — show every available volume; the active one tracks the photo */
+    /* size chips - show every available volume; the active one tracks the photo */
     var sizeChips = "";
     if (multi) {
       sizeChips =
@@ -140,6 +188,7 @@
     var grid = document.getElementById("product-grid");
     if (!grid || !window.ESG_PRODUCTS) return;
     var filterHost = document.getElementById("product-filters");
+    var subHost = document.getElementById("product-subfilters");
     var countEl = document.getElementById("product-count");
     var searchEl = document.getElementById("product-search");
     var clearEl = document.querySelector("[data-search-clear]");
@@ -147,12 +196,16 @@
     var cats = window.ESG_CATEGORIES;
     var products = window.ESG_PRODUCTS;
     var current = "all";
+    var currentSub = "all";
     var query = "";
 
     function lang() { return (window.ESG && window.ESG.lang && window.ESG.lang()) || "ka"; }
+    function activeCat() {
+      for (var i = 0; i < cats.length; i++) if (cats[i].id === current) return cats[i];
+      return null;
+    }
 
     /* ---- build filter tabs ONCE; relabel in place on lang change ---- */
-    /* with a single category the All/category split is redundant — hide the bar */
     if (cats.length <= 1) {
       filterHost.style.display = "none";
       current = cats.length ? "all" : "all";
@@ -172,7 +225,46 @@
         var d = tabDefs[i];
         b.textContent = d.id === "all" ? t.all : d.cat.name[lang()];
       });
+      relabelSubs();
     }
+
+    /* ---- subcategory chip row (only for categories that define subs) ---- */
+    function buildSubs() {
+      if (!subHost) return;
+      var cat = activeCat();
+      if (!cat || !cat.subs || !cat.subs.length) {
+        subHost.innerHTML = "";
+        subHost.hidden = true;
+        return;
+      }
+      var subDefs = [{ id: "all" }].concat(cat.subs.map(function (s) { return { id: s.id, sub: s }; }));
+      subHost.innerHTML = subDefs.map(function (d) {
+        return '<button class="subtab" type="button" data-sub="' + d.id + '" aria-pressed="' + (d.id === currentSub) + '"></button>';
+      }).join("");
+      subHost.hidden = false;
+      Array.prototype.slice.call(subHost.querySelectorAll(".subtab")).forEach(function (b) {
+        b.addEventListener("click", function () {
+          currentSub = b.dataset.sub;
+          Array.prototype.slice.call(subHost.querySelectorAll(".subtab")).forEach(function (o) {
+            o.setAttribute("aria-pressed", String(o === b));
+          });
+          render();
+        });
+      });
+      relabelSubs();
+    }
+    function relabelSubs() {
+      if (!subHost || subHost.hidden) return;
+      var cat = activeCat();
+      if (!cat || !cat.subs) return;
+      var t = T[lang()];
+      var subDefs = [{ id: "all" }].concat(cat.subs.map(function (s) { return { id: s.id, sub: s }; }));
+      Array.prototype.slice.call(subHost.querySelectorAll(".subtab")).forEach(function (b, i) {
+        var d = subDefs[i];
+        b.textContent = d.id === "all" ? t.all : d.sub.name[lang()];
+      });
+    }
+
     function positionPill(instant) {
       var btn = filterHost.querySelector('.tab[aria-selected="true"]') || buttons[0];
       if (!btn) return;
@@ -192,6 +284,8 @@
       buttons.forEach(function (b) { b.setAttribute("aria-selected", String(b === btn)); });
       positionPill();
       current = btn.dataset.id;
+      currentSub = "all";
+      buildSubs();
       render();
     }
     buttons.forEach(function (b) {
@@ -200,15 +294,18 @@
 
     function matchesQuery(p) {
       if (!query) return true;
-      var hay = (p.name.ka + " " + p.name.en + " " + p.slug + " " +
-        p.sizes.map(function (s) { return s.code; }).join(" ")).toLowerCase();
+      var codes = (p.sizes || []).map(function (s) { return s.code; }).join(" ");
+      var hay = (p.name.ka + " " + p.name.en + " " + p.slug + " " + codes + " " +
+        (p.code || "") + " " + (p.spec ? p.spec.ka + " " + p.spec.en : "")).toLowerCase();
       return hay.indexOf(query) !== -1;
     }
 
     function render() {
       var l = lang();
       var list = products.filter(function (p) {
-        return (current === "all" || p.cat === current) && matchesQuery(p);
+        if (current !== "all" && p.cat !== current && !(p.cats && p.cats.indexOf(current) !== -1)) return false;
+        if (current !== "all" && currentSub !== "all" && p.sub !== currentSub) return false;
+        return matchesQuery(p);
       });
       grid.innerHTML = list.map(function (p) { return cardHTML(p, l); }).join("");
       bindCycles(grid);
@@ -235,9 +332,9 @@
 
     /* initial paint */
     relabel();
+    buildSubs();
     render();
     positionPill(true);
-    // reposition once layout/fonts settle (Georgian metrics differ)
     requestAnimationFrame(function () { positionPill(true); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { positionPill(true); });
     window.addEventListener("load", function () { positionPill(true); });

@@ -1,5 +1,5 @@
 /* =========================================================================
-   ESG — product detail page
+   ESG - product detail page
    Reads ?slug=… from the URL, renders the detail view + similar products.
    Size switcher: clicking a volume swaps the photo + article code live.
    Reuses window.ESG_CARD (from catalog.js) for the similar-product cards.
@@ -16,6 +16,7 @@
       usage: "მოხმარების წესი",
       category: "კატეგორია", dilution: "გაზავება", format: "ფორმა", eco: "ეკოლოგია",
       concentrate: "კონცენტრატი", ready: "მზა გამოსაყენებლად", biod: "ბიოდეგრადირებადი",
+      equipment: "აღჭურვილობა", cloths: "ტილოები", household: "საყოფაცხოვრებო", spec: "მახასიათებელი",
       quote: "ფასის მოთხოვნა", back: "კატალოგში დაბრუნება",
       notfound: "პროდუქტი ვერ მოიძებნა.", browse: "კატალოგის ნახვა"
     },
@@ -27,6 +28,7 @@
       usage: "How to use",
       category: "Category", dilution: "Dilution", format: "Format", eco: "Ecology",
       concentrate: "Concentrate", ready: "Ready to use", biod: "Biodegradable",
+      equipment: "Equipment", cloths: "Cloths", household: "Household", spec: "Specification",
       quote: "Request a quote", back: "Back to catalog",
       notfound: "Product not found.", browse: "Browse the catalog"
     }
@@ -38,6 +40,8 @@
     beaker: '<path d="M9 3h6M10 3v6.5L4.8 18a2 2 0 0 0 1.7 3h11a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M7 15h10"/>',
     leaf: '<path d="M11 20A7 7 0 0 1 4 13c0-6 7-9 16-9 0 9-3 16-9 16z"/><path d="M4 20c3-4 6-6 10-7"/>',
     spray: '<path d="M9 3h4M9 5h4l1 3H8zM8 8h8v3a4 4 0 0 1-4 4 4 4 0 0 1-4-4zM12 15v6M16 5h3M16 7h4M16 9h3"/>',
+    cog: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+    hash: '<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     back: '<path d="M19 12H5M11 18l-6-6 6-6"/>'
   };
@@ -74,7 +78,22 @@
   function catLabelFor(cat, t) {
     if (cat === "shampoo") return t.shampoo;
     if (cat === "biskonto") return t.biskonto;
+    if (cat === "equipment") return t.equipment;
+    if (cat === "cloths") return t.cloths;
+    if (cat === "household") return t.household;
     return t.cosmetics;
+  }
+  /* resolve a product's subcategory display name (equipment) */
+  function subNameFor(p, lang) {
+    var cats = window.ESG_CATEGORIES || [];
+    for (var i = 0; i < cats.length; i++) {
+      if (cats[i].id === p.cat && cats[i].subs) {
+        for (var j = 0; j < cats[i].subs.length; j++) {
+          if (cats[i].subs[j].id === p.sub) return cats[i].subs[j].name[lang];
+        }
+      }
+    }
+    return "";
   }
   function currentSize(p) {
     var sizes = sortedSizes(p);
@@ -110,19 +129,20 @@
         fmtL(s.l, l) + " " + t.liter + "</button>";
     }).join("");
 
-    /* packaging list — highlight the active row */
+    /* packaging list - highlight the active row */
     var rows = sizes.map(function (s) {
       var on = s.l === sel.l;
       return '<li class="spec-row' + (on ? " on" : "") + '" data-l="' + s.l + '">' +
-        '<span class="sz">' + fmtL(s.l, l) + " " + t.liter + '</span><span class="cd">' + (s.code ? "#" + s.code : "—") + "</span></li>";
+        '<span class="sz">' + fmtL(s.l, l) + " " + t.liter + '</span><span class="cd">' + (s.code ? "#" + s.code : "-") + "</span></li>";
     }).join("");
 
-    var facts = [
+    var factDefs = [
       { i: "tag", k: t.category, v: catLabel },
       { i: "beaker", k: t.format, v: format },
-      { i: "drop", k: t.dilution, v: p.dilution[l] },
-      { i: "leaf", k: t.eco, v: t.biod }
-    ].map(function (f) {
+      { i: "drop", k: t.dilution, v: p.dilution[l] }
+    ];
+    if (!p.noEco) factDefs.push({ i: "leaf", k: t.eco, v: t.biod });
+    var facts = factDefs.map(function (f) {
       return '<li><span class="fi">' + svg(f.i) + '</span><span class="ft"><span class="k">' +
         f.k + '</span><span class="v">' + f.v + "</span></span></li>";
     }).join("");
@@ -145,7 +165,7 @@
         '<span class="chip">' + svg("drop", 15) + p.dilution[l] + "</span>" +
         '<div class="pd-block"><p class="lbl">' + t.size + '</p>' +
           '<div class="pd-sizes" role="group" aria-label="' + t.size + '">' + sizeBtns + "</div>" +
-          '<p class="pd-codeline">' + t.code + ' · <span class="cd" id="sel-code">' + (sel.code ? "#" + sel.code : "—") + "</span></p>" +
+          '<p class="pd-codeline">' + t.code + ' · <span class="cd" id="sel-code">' + (sel.code ? "#" + sel.code : "-") + "</span></p>" +
         "</div>" +
         '<div class="pd-block"><p class="lbl">' + t.facts + '</p><ul class="pd-facts">' + facts + "</ul></div>" +
         usageBlock +
@@ -163,7 +183,7 @@
         "</div>" +
       "</div>";
 
-    document.title = "ESG — " + p.name[l];
+    document.title = "ESG - " + p.name[l];
     bindSizes(p, l);
   }
 
@@ -184,7 +204,7 @@
           o.setAttribute("aria-pressed", String(on));
         });
         rows.forEach(function (r) { r.classList.toggle("on", parseFloat(r.dataset.l) === litre); });
-        if (codeEl) codeEl.textContent = b.dataset.code ? "#" + b.dataset.code : "—";
+        if (codeEl) codeEl.textContent = b.dataset.code ? "#" + b.dataset.code : "-";
         if (photo) {
           photo.classList.add("swap");
           var next = b.dataset.img;
@@ -205,9 +225,16 @@
     var grid = document.getElementById("similar-grid");
     if (!section || !grid || !window.ESG_CARD) return;
     /* same-category neighbours, walking forward from the current product and
-       wrapping — so every product surfaces a different, related set instead of
+       wrapping - so every product surfaces a different, related set instead of
        always the first three in the catalog. */
-    var sameCat = (window.ESG_PRODUCTS || []).filter(function (q) { return q.cat === p.cat; });
+    var sameCat = (window.ESG_PRODUCTS || []).filter(function (q) {
+      if (q.cat !== p.cat) return false;
+      if (p.cat === "equipment") return q.sub === p.sub; // prefer same subcategory
+      return true;
+    });
+    if (p.cat === "equipment" && sameCat.length < 2) {
+      sameCat = (window.ESG_PRODUCTS || []).filter(function (q) { return q.cat === p.cat; });
+    }
     var start = sameCat.findIndex(function (q) { return q.slug === p.slug; });
     if (start < 0) start = 0;
     var pool = [];
@@ -242,6 +269,44 @@
     if (s) s.hidden = true;
   }
 
+  /* ---- equipment detail (hardware: no dilution / sizes / eco) ---- */
+  function renderEquipmentDetail(p, l) {
+    var t = T[l];
+    var host = document.getElementById("product-detail");
+    var subLabel = subNameFor(p, l) || catLabelFor(p.cat, t);
+
+    var facts = [
+      { i: "tag", k: t.category, v: subLabel },
+      { i: "cog", k: t.spec, v: (p.spec ? p.spec[l] : "-") },
+      { i: "hash", k: t.code, v: (p.code ? "#" + p.code : "-") }
+    ].map(function (f) {
+      return '<li><span class="fi">' + svg(f.i) + '</span><span class="ft"><span class="k">' +
+        f.k + '</span><span class="v">' + f.v + "</span></span></li>";
+    }).join("");
+
+    host.innerHTML =
+      '<div class="pd-info">' +
+        '<span class="eyebrow"><span class="idx">01</span>' + subLabel + "</span>" +
+        "<h1>" + p.name[l] + "</h1>" +
+        (p.blurb ? '<p class="lede">' + p.blurb[l] + "</p>" : "") +
+        (p.spec ? '<span class="chip">' + svg("cog", 15) + p.spec[l] + "</span>" : "") +
+        '<div class="pd-block"><p class="lbl">' + t.facts + '</p><ul class="pd-facts">' + facts + "</ul></div>" +
+        '<div class="pd-actions">' +
+          '<a class="btn btn-lg btn-primary" href="contact.html">' + t.quote + svg("arrow", 17) + "</a>" +
+          '<a class="btn btn-lg btn-outline" href="products.html">' + svg("back", 17) + t.back + "</a>" +
+        "</div>" +
+      "</div>" +
+      '<div class="pd-media">' +
+        '<div class="pd-stage ' + p.cat + '">' +
+          '<span class="topbar"></span>' +
+          '<span class="cat"><span class="d"></span>' + subLabel + "</span>" +
+          '<img id="pd-photo" src="' + p.img + '" alt="' + p.name[l] + '" />' +
+        "</div>" +
+      "</div>";
+
+    document.title = "ESG - " + p.name[l];
+  }
+
   function renderAll() {
     var l = lang();
     var slug = getSlug();
@@ -249,7 +314,8 @@
     var p = find(slug);
     if (!p) { renderNotFound(l); return; }
     renderCrumbs(p, l);
-    renderDetail(p, l);
+    if (p.cat === "equipment" || p.cat === "cloths") { renderEquipmentDetail(p, l); }
+    else { renderDetail(p, l); }
     renderSimilar(p, l);
   }
 

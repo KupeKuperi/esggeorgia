@@ -1,5 +1,5 @@
 /* =========================================================================
-   ESG — shared behavior (bilingual i18n, sticky header, mobile menu, reveal)
+   ESG - shared behavior (bilingual i18n, sticky header, mobile menu, reveal)
    Pages carry their own inline header/footer + real content.
    Catalog rendering lives in catalog.js (products page only).
    ========================================================================= */
@@ -30,7 +30,7 @@
     // notify the catalog (if present) to re-render localized cards
     document.dispatchEvent(new CustomEvent("esg:lang", { detail: { lang: l } }));
   }
-  // public API used by catalog.js — both names provided to avoid contract drift
+  // public API used by catalog.js - both names provided to avoid contract drift
   window.ESG = window.ESG || {};
   window.ESG.lang = getLang;
   window.ESG.getLang = getLang;

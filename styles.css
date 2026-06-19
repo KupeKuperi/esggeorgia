@@ -1,15 +1,15 @@
 /* =========================================================================
-   ESG — refined design system (applied)
+   ESG - refined design system (applied)
    Mirrors source/styles/globals.css :root, plus the approved proposal tokens.
-   No hard-coded hex in components — everything reads from these tokens.
+   No hard-coded hex in components - everything reads from these tokens.
    ========================================================================= */
 :root{
-  /* Brand — ESG blue (official #008CCF = 500) — UNCHANGED */
+  /* Brand - ESG blue (official #008CCF = 500) - UNCHANGED */
   --brand-50:#e9f6fd; --brand-100:#ccebfb; --brand-200:#9bd9f6; --brand-300:#5fc4f0;
   --brand-400:#1faae7; --brand-500:#008ccf; --brand-600:#0072ac; --brand-700:#075c89;
   --brand-800:#0d4c70; --brand-900:#103f5d; --brand-950:#0a2638; --brand-fg:#ffffff;
 
-  /* Accent — nudged toward teal/green for separation + eco story
+  /* Accent - nudged toward teal/green for separation + eco story
      (was #00ade5 / #009dda) */
   --accent:#00c2c8; --accent-strong:#00a6ad; --accent-fg:#042231;
 
@@ -26,7 +26,7 @@
   --shadow-lift:0 2px 6px rgba(12,19,32,.06), 0 28px 56px -22px rgba(12,19,32,.32);
   --shadow-pop:0 1px 2px rgba(12,19,32,.05), 0 18px 44px -16px color-mix(in oklab,var(--brand-500) 42%,transparent);
 
-  /* Fluid type — clamp()'d so long Georgian words never overflow @375 */
+  /* Fluid type - clamp()'d so long Georgian words never overflow @375 */
   --text-display:clamp(2.25rem,7vw,4.25rem);
   --text-h1:clamp(1.9rem,5.2vw,3rem);
   --text-h2:clamp(1.6rem,3.4vw,2.4rem);
@@ -87,7 +87,7 @@ img{display:block;}
 .section-head h2{margin-top:16px; font-size:var(--text-h2); line-height:1.12; font-weight:700; letter-spacing:-.025em;}
 .section-head p{margin-top:14px; font-size:var(--text-lead); line-height:1.6; color:var(--ink-muted);}
 
-/* reveal on scroll — gated on html.js so no-JS / failed-JS keeps content visible */
+/* reveal on scroll - gated on html.js so no-JS / failed-JS keeps content visible */
 html.js .reveal{opacity:0; transform:translateY(18px); transition:opacity .55s var(--ease-brand), transform .55s var(--ease-brand);}
 html.js .reveal.in{opacity:1; transform:none;}
 
@@ -157,7 +157,7 @@ html.js .reveal.in{opacity:1; transform:none;}
 .mobile-menu a:not(.active):hover{background:var(--bg-subtle);}
 
 /* =========================================================================
-   HOME — HERO
+   HOME - HERO
    ========================================================================= */
 .hero{position:relative; overflow:hidden;}
 .hero .bgglow{position:absolute; inset:0; z-index:0; pointer-events:none;}
@@ -181,7 +181,7 @@ html.js .reveal.in{opacity:1; transform:none;}
 .hero .strip .v{font-size:clamp(1.5rem,3vw,2rem); font-weight:800; letter-spacing:-.03em; color:var(--brand-700); font-variant-numeric:tabular-nums;}
 .hero .strip .l{margin-top:2px; font-size:13px; color:var(--ink-muted); max-width:16ch;}
 
-/* hero media stage — premium photo showcase */
+/* hero media stage - premium photo showcase */
 .hero .stage{position:relative; border-radius:26px; min-height:clamp(440px,52vw,560px);
   box-shadow:0 34px 70px -32px rgba(15,23,42,.55), 0 0 90px -28px color-mix(in oklab,var(--brand-500) 60%,transparent);}
 .hero .stage::after{content:""; position:absolute; inset:0; border-radius:26px; pointer-events:none; z-index:5;
@@ -222,7 +222,7 @@ html.js .reveal.in{opacity:1; transform:none;}
 }
 
 /* =========================================================================
-   CARDS — categories / features / contact / branches (shared recipe)
+   CARDS - categories / features / contact / branches (shared recipe)
    ========================================================================= */
 .cardgrid{display:grid; gap:20px; margin-top:48px;}
 .cardgrid.cols-2{grid-template-columns:1fr;}
@@ -253,7 +253,7 @@ html.js .reveal.in{opacity:1; transform:none;}
 .card.interactive:hover .more .icon{transform:translateX(3px);}
 @media(min-width:1024px){.card.reveal-more .more{opacity:0; transition:opacity .3s;} .card.reveal-more:hover .more{opacity:1;}}
 
-/* why-ESG — open feature strip (contrasts with the bordered cards above) */
+/* why-ESG - open feature strip (contrasts with the bordered cards above) */
 .featgrid{display:grid; gap:32px 28px; margin-top:48px; grid-template-columns:1fr;}
 @media(min-width:640px){.featgrid{grid-template-columns:1fr 1fr;}}
 @media(min-width:1024px){
@@ -265,7 +265,7 @@ html.js .reveal.in{opacity:1; transform:none;}
 .feat h3{margin-top:18px; font-size:17px; font-weight:700;}
 .feat p{margin-top:8px; font-size:14.5px; line-height:1.55; color:var(--ink-muted);}
 
-/* about teaser — facility photo panel */
+/* about teaser - facility photo panel */
 .photo-panel{position:relative; margin:0; overflow:hidden; border-radius:24px; border:1px solid var(--border); box-shadow:var(--shadow-lift); min-height:clamp(300px,36vw,420px);}
 .photo-panel img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:58% 38%;}
 .photo-panel::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 55%,rgba(10,38,56,.55) 100%);}
@@ -278,7 +278,7 @@ html.js .reveal.in{opacity:1; transform:none;}
 .about-teaser h2{font-size:var(--text-h2); line-height:1.12; font-weight:700; letter-spacing:-.025em;}
 .about-teaser p.body{margin-top:20px; font-size:var(--text-lead); line-height:1.65; color:var(--ink-muted);}
 .about-teaser p.tag{margin-top:20px; font-size:var(--text-lead); font-weight:700; color:var(--brand-700);}
-/* about teaser — refined light brand-mark panel */
+/* about teaser - refined light brand-mark panel */
 .slate-panel{position:relative; overflow:hidden; border-radius:24px;
   background:linear-gradient(165deg,#ffffff 0%,var(--brand-50) 100%);
   border:1px solid var(--border); padding:clamp(40px,5vw,56px);
@@ -372,6 +372,26 @@ html.js .reveal.in{opacity:1; transform:none;}
 .pc:hover .quote a .icon{transform:translateX(3px);}
 
 .coming{margin-top:32px; border:1px dashed var(--border-strong); border-radius:var(--radius-card); padding:20px 24px; font-size:14px; color:var(--ink-muted); background:var(--surface-2);}
+
+/* subcategory chip row (equipment) */
+.subfilters{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+.subfilters[hidden]{display:none;}
+.subfilters .subtab{appearance:none; cursor:pointer; font-family:inherit; font-size:13px; font-weight:600; color:var(--ink-muted); background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:7px 14px; transition:color .2s var(--ease-brand), background .2s var(--ease-brand), border-color .2s var(--ease-brand);}
+.subfilters .subtab:hover{color:var(--brand-700); border-color:var(--brand-300);}
+.subfilters .subtab[aria-pressed="true"]{color:var(--brand-fg); background:var(--brand-500); border-color:var(--brand-500);}
+
+/* equipment cards: flat-white stage, accent bar, spec line + code */
+.pc.equipment .bar,.pc.cloths .bar{background:linear-gradient(90deg,var(--brand-700),var(--accent));}
+.pc.equipment .cat .d,.pc.cloths .cat .d{background:var(--accent);}
+.pc.equipment .stage.eq,.pc.cloths .stage.eq{background:#fff;}
+.pc.equipment .stage.eq img,.pc.cloths .stage.eq img{padding:clamp(14px,5%,28px);}
+.pc .chip.eq-spec{margin-top:14px; white-space:normal; line-height:1.4; text-align:left; background:var(--surface-2); color:var(--ink); border:1px solid var(--border);}
+.pc .chip.eq-spec .icon{color:var(--ink-faint);}
+.pc .eq-code{margin-top:12px; font-size:13px; color:var(--ink-muted); font-variant-numeric:tabular-nums;}
+.pc .eq-code .cd{font-weight:700; color:var(--brand-700);}
+.pd-stage.equipment,.pd-stage.cloths{background:#fff;}
+.pd-stage.equipment .cat .d,.pd-stage.cloths .cat .d{background:var(--accent);}
+.pd-stage.equipment img,.pd-stage.cloths img{padding:clamp(24px,5%,52px);}
 
 /* catalog controls: filters + search + count */
 .catalog-controls{display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between;}
@@ -522,7 +542,7 @@ html.js .reveal.in{opacity:1; transform:none;}
 .offer.feature p{font-size:16px; font-weight:600; padding-top:0;}
 .offer.feature:hover{border-color:color-mix(in oklab,var(--accent) 55%,transparent);}
 
-/* process journey — step-by-step path */
+/* process journey - step-by-step path */
 .process{list-style:none; margin:28px 0 0; padding:0; position:relative;}
 .process::before{content:""; position:absolute; left:25px; top:26px; bottom:26px; width:2px; border-radius:2px;
   background:linear-gradient(var(--brand-400),var(--accent)); opacity:.32;}
@@ -554,7 +574,7 @@ html.js .reveal.in{opacity:1; transform:none;}
 .about-prose{max-width:48rem;}
 .about-prose p{font-size:var(--text-lead); line-height:1.75; color:var(--ink-muted);}
 .about-prose p + p{margin-top:24px;}
-/* About hero — full-bleed facility photo behind the headline */
+/* About hero - full-bleed facility photo behind the headline */
 .about-hero{background:var(--brand-950); border-bottom:0;}
 .about-hero::after{content:""; position:absolute; left:0; right:0; bottom:0; height:3px; z-index:3;
   background:linear-gradient(90deg,var(--brand-500),var(--accent));}
@@ -585,7 +605,7 @@ html.js .reveal.in{opacity:1; transform:none;}
 .quote-block::before{content:""; position:absolute; left:-4px; top:0; bottom:0; width:4px; background:linear-gradient(var(--brand-500),var(--accent));}
 .quote-block p{font-size:clamp(1.25rem,2.4vw,1.6rem); font-weight:700; letter-spacing:-.02em; line-height:1.35;}
 
-/* About — facility mosaic gallery */
+/* About - facility mosaic gallery */
 .facility-gallery{display:grid; gap:16px; grid-template-columns:1fr 1fr; margin-top:40px;}
 .facility-gallery figure{margin:0; position:relative; overflow:hidden; border-radius:18px;
   border:1px solid var(--border); box-shadow:var(--shadow-soft); min-height:230px; background:var(--surface-2);}
@@ -604,7 +624,7 @@ html.js .reveal.in{opacity:1; transform:none;}
   .fg-wide{grid-column:2 / span 2; grid-row:1;}
 }
 
-/* About — production / equipment grid */
+/* About - production / equipment grid */
 .prod-gallery{display:grid; gap:18px; grid-template-columns:repeat(2,1fr); margin-top:40px;}
 @media(min-width:780px){.prod-gallery{grid-template-columns:repeat(4,1fr);}}
 .prod-gallery figure{margin:0; overflow:hidden; border-radius:16px; border:1px solid var(--border);
@@ -727,7 +747,7 @@ textarea.field{resize:vertical; min-height:96px;}
 }
 
 /* =========================================================================
-   MOBILE OPTIMISATION — type scale, compact product cards, detail, services
+   MOBILE OPTIMISATION - type scale, compact product cards, detail, services
    ========================================================================= */
 @media(max-width:600px){
   /* tame the fluid type so long Georgian words never dominate the screen */
@@ -742,7 +762,7 @@ textarea.field{resize:vertical; min-height:96px;}
   h1,h2,h3,h4{overflow-wrap:break-word;}
   .section-head p{margin-top:12px;}
 
-  /* HERO — calmer stage chrome */
+  /* HERO - calmer stage chrome */
   .hero .wrap{gap:28px;}
   .hero .stage .pill{font-size:11px; padding:7px 11px;}
   .hero .stage .pill .icon{width:13px; height:13px;}
@@ -753,7 +773,7 @@ textarea.field{resize:vertical; min-height:96px;}
   .hero .stage .tagcard .tc-k{font-size:13px;}
   .hero .stage .tagcard .tc-s{font-size:10.5px;}
 
-  /* PRODUCTS — compact horizontal list cards (see several at once) */
+  /* PRODUCTS - compact horizontal list cards (see several at once) */
   .catalog-controls{gap:10px;}
   .psearch{flex:1 1 100%; max-width:none;}
   .product-grid{gap:12px; margin-top:22px;}
@@ -772,7 +792,7 @@ textarea.field{resize:vertical; min-height:96px;}
   .pc .quote a{font-size:13.5px;}
   .pc:hover{transform:none;}
 
-  /* PRODUCT DETAIL — full-width actions, tighter blocks */
+  /* PRODUCT DETAIL - full-width actions, tighter blocks */
   .pdetail{gap:24px; margin-top:18px;}
   .pd-info .lede{margin-top:14px;}
   .pd-block{margin-top:22px;}
@@ -782,7 +802,7 @@ textarea.field{resize:vertical; min-height:96px;}
   .pd-facts li{padding:12px 13px;}
   .pd-specs li{padding:12px 14px; font-size:14px;}
 
-  /* SERVICES — tighter process timeline + featured card */
+  /* SERVICES - tighter process timeline + featured card */
   .process{margin-top:22px;}
   .pstep{grid-template-columns:44px 1fr; gap:16px; padding-bottom:24px;}
   .pnode{width:44px; height:44px; font-size:13px;}
@@ -810,7 +830,7 @@ textarea.field{resize:vertical; min-height:96px;}
 }
 
 /* =========================================================================
-   TWEAKS — expressive controls (mood / accent / motion)
+   TWEAKS - expressive controls (mood / accent / motion)
    Applied via [data-mood] / [data-motion] on <html>; accent ramp is swapped
    as --brand-* / --accent* custom properties by the panel script.
    ========================================================================= */

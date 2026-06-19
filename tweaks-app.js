@@ -1,5 +1,5 @@
 /* =========================================================================
-   ESG — Tweaks app. Mounts a React panel that reshapes the vanilla site via
+   ESG - Tweaks app. Mounts a React panel that reshapes the vanilla site via
    [data-mood] / [data-motion] on <html> and a swapped brand colour ramp.
    ========================================================================= */
 (function () {
