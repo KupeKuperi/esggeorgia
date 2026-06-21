@@ -330,6 +330,15 @@ html.js .reveal.in{opacity:1; transform:none;}
 .filters .tab{position:relative; z-index:1; flex:none; appearance:none; border:0; background:transparent; cursor:pointer; font-family:inherit; font-size:14px; font-weight:600; color:var(--ink-muted); padding:9px 18px; border-radius:999px; white-space:nowrap; transition:color .25s var(--ease-brand);}
 .filters .tab[aria-selected="true"]{color:var(--brand-fg);}
 .filters .pillslide{position:absolute; z-index:0; top:5px; bottom:5px; left:0; width:0; border-radius:999px; background:var(--brand-500); box-shadow:var(--shadow-soft); transition:left .3s var(--ease-brand), width .3s var(--ease-brand);}
+/* Mobile: show every category at once (wrap to rows) instead of a hidden
+   sideways-scroll row. The sliding pill can't span rows, so the active tab
+   gets a solid fill directly. */
+@media(max-width:640px){
+  .filters{flex-wrap:wrap; justify-content:center; overflow-x:visible; border-radius:18px; gap:7px;}
+  .filters .pillslide{display:none;}
+  .filters .tab{padding:10px 15px; border:1px solid var(--border); background:var(--surface);}
+  .filters .tab[aria-selected="true"]{background:var(--brand-500); color:var(--brand-fg); border-color:var(--brand-500);}
+}
 
 .product-grid{display:grid; gap:20px; margin-top:32px; grid-template-columns:1fr;}
 @media(min-width:640px){.product-grid{grid-template-columns:repeat(2,1fr);}}

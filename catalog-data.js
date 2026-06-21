@@ -282,11 +282,11 @@ window.ESG_PRODUCTS = [
       ka: "გამაფრქვეველით დაიტანეთ პლასტიკის ან ტორპედოს ზედაპირზე, შემდეგ დაამუშავეთ ტილოთი ან ღრუბელით.",
       en: "Spray onto the plastic or dashboard surface, then work it in with a cloth or sponge."
     },
-    img: "assets/catalog/plastic-care-5l.png",
+    img: "assets/catalog/plastic-care-5l.webp",
     sizes: [
-      { l: 5,   code: "64453", img: "assets/catalog/plastic-care-5l.png" },
-      { l: 1,   code: "64452", img: "assets/catalog/plastic-care-1l.png" },
-      { l: 0.5, code: "63100", img: "assets/catalog/plastic-care-05l.png" }
+      { l: 5,   code: "64453", img: "assets/catalog/plastic-care-5l.webp" },
+      { l: 1,   code: "64452", img: "assets/catalog/plastic-care-1l.webp" },
+      { l: 0.5, code: "63100", img: "assets/catalog/plastic-care-05l.webp" }
     ]
   },
 
@@ -307,13 +307,13 @@ window.ESG_PRODUCTS = [
       ka: "ჩაასხით გაზავებული ხსნარი მანქანის წყლის ავზში.",
       en: "Pour the diluted solution into the vehicle's washer-fluid tank."
     },
-    img: "assets/catalog/super-glass-5l.png",
-    hero: "assets/catalog/super-glass-all.png",
+    img: "assets/catalog/super-glass-5l.webp",
+    hero: "assets/catalog/super-glass-all.webp",
     sizes: [
-      { l: 5,   code: "64744", img: "assets/catalog/super-glass-5l.png" },
-      { l: 3,   code: "64743", img: "assets/catalog/super-glass-3l.png" },
-      { l: 1,   code: "",      img: "assets/catalog/super-glass-1l.png" },
-      { l: 0.5, code: "63688", img: "assets/catalog/super-glass-05l.png" }
+      { l: 5,   code: "64744", img: "assets/catalog/super-glass-5l.webp" },
+      { l: 3,   code: "64743", img: "assets/catalog/super-glass-3l.webp" },
+      { l: 1,   code: "",      img: "assets/catalog/super-glass-1l.webp" },
+      { l: 0.5, code: "63688", img: "assets/catalog/super-glass-05l.webp" }
     ]
   },
 
@@ -333,12 +333,12 @@ window.ESG_PRODUCTS = [
       ka: "გამაფრქვეველით დაიტანეთ საბურავის ზედაპირზე და შემდეგ დაამუშავეთ ღრუბელით.",
       en: "Spray onto the tyre surface, then work it in with a sponge."
     },
-    img: "assets/catalog/black-brill-5l.png",
-    hero: "assets/catalog/black-brill-all.png",
+    img: "assets/catalog/black-brill-5l.webp",
+    hero: "assets/catalog/black-brill-all.webp",
     sizes: [
-      { l: 5,   code: "64449", img: "assets/catalog/black-brill-5l.png" },
-      { l: 1,   code: "64455", img: "assets/catalog/black-brill-1l.png" },
-      { l: 0.5, code: "63102", img: "assets/catalog/black-brill-05l.png" }
+      { l: 5,   code: "64449", img: "assets/catalog/black-brill-5l.webp" },
+      { l: 1,   code: "64455", img: "assets/catalog/black-brill-1l.webp" },
+      { l: 0.5, code: "63102", img: "assets/catalog/black-brill-05l.webp" }
     ]
   },
 
@@ -360,12 +360,12 @@ window.ESG_PRODUCTS = [
     },
     cats: ["household"],
     noEco: true,
-    img: "assets/catalog/black-lux-prem.png",
-    hero: "assets/catalog/black-lux-all.png",
+    img: "assets/catalog/black-lux-prem.webp",
+    hero: "assets/catalog/black-lux-all.webp",
     sizes: [
-      { l: 5,    code: "65022", img: "assets/catalog/black-lux-prem.png" },
-      { l: 1,    code: "64988", img: "assets/catalog/black-lux-1l.png" },
-      { l: 0.25, code: "65007", img: "assets/catalog/black-lux-250ml.png" }
+      { l: 5,    code: "65022", img: "assets/catalog/black-lux-prem.webp" },
+      { l: 1,    code: "64988", img: "assets/catalog/black-lux-1l.webp" },
+      { l: 0.25, code: "65007", img: "assets/catalog/black-lux-250ml.webp" }
     ]
   },
 
@@ -385,12 +385,12 @@ window.ESG_PRODUCTS = [
       ka: "გამაფრქვეველით დაიტანეთ ძრავის ზედაპირზე, გააჩერეთ რამდენიმე წუთი და ჩამორეცხეთ წყლით. ეცადეთ არ მოხვდეს ძარის ზედაპირზე.",
       en: "Spray onto the engine, leave for a few minutes, then rinse off with water. Avoid contact with the body paint."
     },
-    img: "assets/catalog/tenax-5l.png",
-    hero: "assets/catalog/tenax-all.png",
+    img: "assets/catalog/tenax-5l.webp",
+    hero: "assets/catalog/tenax-all.webp",
     sizes: [
-      { l: 5,   code: "64666", img: "assets/catalog/tenax-5l.png" },
-      { l: 1,   code: "64665", img: "assets/catalog/tenax-1l.png" },
-      { l: 0.5, code: "63097", img: "assets/catalog/tenax-05l.png" }
+      { l: 5,   code: "64666", img: "assets/catalog/tenax-5l.webp" },
+      { l: 1,   code: "64665", img: "assets/catalog/tenax-1l.webp" },
+      { l: 0.5, code: "63097", img: "assets/catalog/tenax-05l.webp" }
     ]
   },
 
@@ -411,12 +411,12 @@ window.ESG_PRODUCTS = [
       ka: "გამაფრქვეველით დაიტანეთ სალონის ნაჭრის ან ტყავის ზედაპირზე, გააჩერეთ რამდენიმე წუთი და დაამუშავეთ ტილოთი ან ღრუბელით.",
       en: "Spray onto the cabin's fabric or leather, leave for a few minutes, then work in with a cloth or sponge."
     },
-    img: "assets/catalog/texil-5l.png",
-    hero: "assets/catalog/texil-all.png",
+    img: "assets/catalog/texil-5l.webp",
+    hero: "assets/catalog/texil-all.webp",
     sizes: [
-      { l: 5,   code: "64669", img: "assets/catalog/texil-5l.png" },
-      { l: 1,   code: "64668", img: "assets/catalog/texil-1l.png" },
-      { l: 0.5, code: "63690", img: "assets/catalog/texil-05l.png" }
+      { l: 5,   code: "64669", img: "assets/catalog/texil-5l.webp" },
+      { l: 1,   code: "64668", img: "assets/catalog/texil-1l.webp" },
+      { l: 0.5, code: "63690", img: "assets/catalog/texil-05l.webp" }
     ]
   },
 
@@ -436,12 +436,11 @@ window.ESG_PRODUCTS = [
       ka: "გაზავებული ხსნარით დაამუშავეთ იატაკი ან მყარი ზედაპირი; ჩამორეცხვა საჭირო არ არის.",
       en: "Mop the floor or hard surface with the diluted solution; no rinsing needed."
     },
-    img: "assets/catalog/floor-cleaner-5l.png",
-    hero: "assets/catalog/floor-cleaner-all.png",
+    img: "assets/catalog/floor-cleaner-5l.webp",
+    hero: "assets/catalog/floor-cleaner-all.webp",
     sizes: [
-      { l: 5,   code: "", img: "assets/catalog/floor-cleaner-5l.png" },
-      { l: 1,   code: "", img: "assets/catalog/floor-cleaner-1l.png" },
-      { l: 0.5, code: "", img: "assets/catalog/floor-cleaner-05l.png" }
+      { l: 5,   code: "", img: "assets/catalog/floor-cleaner-5l.webp" },
+      { l: 1,   code: "", img: "assets/catalog/floor-cleaner-1l.webp" }
     ]
   },
 
@@ -461,9 +460,9 @@ window.ESG_PRODUCTS = [
       ka: "გამაფრქვეველით დაიტანეთ ზედაპირზე და გააპრიალეთ მშრალი ტილოთი.",
       en: "Spray onto the surface and buff with a dry cloth."
     },
-    img: "assets/catalog/furniture-care-05l.png",
+    img: "assets/catalog/furniture-care-05l.webp",
     sizes: [
-      { l: 0.5, code: "", img: "assets/catalog/furniture-care-05l.png" }
+      { l: 0.5, code: "", img: "assets/catalog/furniture-care-05l.webp" }
     ]
   },
 
@@ -483,11 +482,11 @@ window.ESG_PRODUCTS = [
       ka: "გარეცხვის შემდეგ გამაფრქვეველით დაიტანეთ მანქანის ზედაპირზე და გაამშრალეთ ტილოთი, ან ჩამორეცხეთ წყლით და შემდეგ გაამშრალეთ.",
       en: "After washing, spray onto the car and dry with a cloth, or rinse off with water and then dry."
     },
-    img: "assets/catalog/rolex-wax-5l.png",
-    hero: "assets/catalog/rolex-wax-all.png",
+    img: "assets/catalog/rolex-wax-5l.webp",
+    hero: "assets/catalog/rolex-wax-all.webp",
     sizes: [
-      { l: 5,   code: "64450", img: "assets/catalog/rolex-wax-5l.png" },
-      { l: 0.5, code: "63692", img: "assets/catalog/rolex-wax-05l.png" }
+      { l: 5,   code: "64450", img: "assets/catalog/rolex-wax-5l.webp" },
+      { l: 0.5, code: "63692", img: "assets/catalog/rolex-wax-05l.webp" }
     ]
   },
 
@@ -507,9 +506,9 @@ window.ESG_PRODUCTS = [
       ka: "დაიტანეთ მინის ან სარკის ზედაპირზე და გაასუფთავეთ მშრალი ტილოთი.",
       en: "Apply to the glass or mirror surface and buff with a dry cloth."
     },
-    img: "assets/catalog/antifog-05l.png",
+    img: "assets/catalog/antifog-05l.webp",
     sizes: [
-      { l: 0.5, code: "63974", img: "assets/catalog/antifog-05l.png" }
+      { l: 0.5, code: "63974", img: "assets/catalog/antifog-05l.webp" }
     ]
   }
 ];

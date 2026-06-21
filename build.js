@@ -27,7 +27,7 @@ const TODAY = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 /* top-level files/folders that must NOT be copied into the published site */
 const EXCLUDE_TOP = new Set([
   "dist", ".git", ".github", "node_modules",
-  "build.js", "tweaks-app.js", "tweaks-panel.jsx",
+  "build.js", "optimize-images.py", "tweaks-app.js", "tweaks-panel.jsx",
   "README.md", "ADD-A-PRODUCT.md", ".gitignore",
 ]);
 
@@ -97,7 +97,7 @@ function buildProductPages(products) {
       155
     );
     const canonical = `${SITE}/products/${slug}/`;
-    const ogImage = abs(p.hero || p.img || "assets/facility.png");
+    const ogImage = abs(p.hero || p.img || "assets/facility.webp");
 
     let html = template;
 
