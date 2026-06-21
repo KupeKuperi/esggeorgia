@@ -1,0 +1,59 @@
+# =============================================================================
+# ESG — build & publish the website to GitHub Pages
+#
+# Plain-English version of what happens here:
+#   Every time you push a change to the "main" branch, GitHub runs `node build.js`
+#   (which creates a page for every product) and publishes the result to your
+#   live site at https://esggeorgia.ge — automatically. You don't run anything.
+#
+# One-time setup (done once, in the repo on github.com):
+#   Settings → Pages → "Build and deployment" → Source → choose "GitHub Actions".
+# =============================================================================
+name: Deploy ESG site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # lets you re-publish manually from the Actions tab
+
+# let the job publish to Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# if you push twice quickly, finish the latest and cancel the older run
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build the site (creates dist/)
+        run: node build.js
+
+      - name: Package the built site for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

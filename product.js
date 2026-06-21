@@ -57,8 +57,17 @@
   var SEL = {};
 
   function getSlug() {
+    /* pretty pages at /products/<slug>/ bake the slug in; fall back to ?slug= */
+    if (window.__ESG_SLUG) return window.__ESG_SLUG;
     var p = new URLSearchParams(window.location.search);
     return p.get("slug") || "";
+  }
+  /* point search engines at the canonical pretty URL (dedupes ?slug= + /products/) */
+  function setCanonical(slug) {
+    var href = "https://esggeorgia.ge/products/" + slug + "/";
+    var link = document.querySelector('link[rel="canonical"]');
+    if (!link) { link = document.createElement("link"); link.setAttribute("rel", "canonical"); document.head.appendChild(link); }
+    link.setAttribute("href", href);
   }
   function lang() {
     return (window.ESG && window.ESG.lang && window.ESG.lang()) || "ka";
@@ -313,6 +322,7 @@
     if (!slug) { window.location.replace("products.html"); return; }
     var p = find(slug);
     if (!p) { renderNotFound(l); return; }
+    setCanonical(slug);
     renderCrumbs(p, l);
     if (p.cat === "equipment" || p.cat === "cloths") { renderEquipmentDetail(p, l); }
     else { renderDetail(p, l); }
