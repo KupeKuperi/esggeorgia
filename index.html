@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ka" data-mood="showroom" data-motion="lively">
+<html lang="ka">
 <head>
 <meta charset="UTF-8" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://*.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
@@ -24,31 +24,54 @@
 <meta name="twitter:title" content="ავტოშამპუნი და ავტოქიმია თბილისი | ESG" />
 <meta name="twitter:description" content="ავტოშამპუნი, ავტოქიმია და სამრეცხაოს ინვენტარი თბილისში." />
 <meta name="twitter:image" content="https://esggeorgia.ge/assets/fac-hero.jpg" />
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "ESG - ეკოკემიკა სერვის ჯგუფი",
-  "alternateName": "Ekokemika Service Group",
-  "url": "https://esggeorgia.ge",
-  "logo": "https://esggeorgia.ge/assets/esg-favicon.png",
-  "image": "https://esggeorgia.ge/assets/fac-hero.jpg",
-  "description": "ავტოშამპუნი, ავტოქიმია და სამრეცხაოს ინვენტარი. ბიოდეგრადირებადი ქართული წარმოება ევროპული ხარისხით.",
-  "telephone": "+995551519165",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "თბილისი",
-    "addressCountry": "GE"
-  },
-  "areaServed": ["თბილისი", "ბათუმი", "ზუგდიდი", "რუსთავი", "საქართველო"],
-  "sameAs": ["https://github.com/KupeKuperi/esggeorgia"]
-}
-</script>
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" href="/assets/esg-favicon.png" />
 <link rel="apple-touch-icon" href="/assets/esg-favicon.png" />
 <link rel="stylesheet" href="styles.css" />
 <script>document.documentElement.classList.add("js");</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "name": "ESG - Ekokemika Service Group",
+  "alternateName": "ეკოკემიკა სერვის ჯგუფი",
+  "url": "https://esggeorgia.ge",
+  "logo": "https://esggeorgia.ge/assets/esg-drop.png",
+  "image": "https://esggeorgia.ge/assets/facility.png",
+  "description": "Biodegradable car chemistry and auto-cosmetics produced to European standards, car-wash equipment, and turnkey car-wash construction in Georgia.",
+  "telephone": "+995551519165",
+  "email": "ekokemikaservicegroup@gmail.com",
+  "priceRange": "$",
+  "currenciesAccepted": "GEL",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Ushangi Chkheidze St 20",
+    "addressLocality": "Tbilisi",
+    "addressCountry": "GE"
+  },
+  "areaServed": ["Tbilisi", "Rustavi", "Batumi", "Zugdidi", "Georgia"],
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "opens": "10:00",
+      "closes": "18:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Sunday",
+      "opens": "10:00",
+      "closes": "16:00"
+    }
+  ],
+  "department": [
+    { "@type": "Store", "name": "ESG - Tbilisi", "address": { "@type": "PostalAddress", "streetAddress": "Ushangi Chkheidze St 20", "addressLocality": "Tbilisi", "addressCountry": "GE" }, "telephone": "+995551519165" },
+    { "@type": "Store", "name": "ESG - Rustavi", "address": { "@type": "PostalAddress", "addressLocality": "Rustavi", "addressCountry": "GE" }, "telephone": "+995551519165" },
+    { "@type": "Store", "name": "ESG - Batumi", "address": { "@type": "PostalAddress", "streetAddress": "Varshanidze St 63", "addressLocality": "Batumi", "addressCountry": "GE" }, "telephone": "+995551519165" },
+    { "@type": "Store", "name": "ESG - Zugdidi", "address": { "@type": "PostalAddress", "streetAddress": "Rustaveli St 245", "addressLocality": "Zugdidi", "addressCountry": "GE" }, "telephone": "+995551519165" }
+  ]
+}
+</script>
 </head>
 <body style="background-color: rgb(255, 255, 255)">
 
@@ -138,10 +161,13 @@
           </div>
         </div>
 
-        <div class="stage reveal" data-delay="0.12">
-          <div class="photo"><img src="assets/hero-carwash.webp" alt="ESG ტექნიკოსი რეცხავს ავტომობილს აქტიური ფენით" fetchpriority="high" decoding="async" /></div>
-          <div class="veil"></div>
-          <div class="sheen"></div>
+        <div class="stage stage--showcase reveal" data-delay="0.12">
+          <span class="showcase-bg" aria-hidden="true"></span>
+          <div class="bottles">
+            <img class="bottle b-back" src="assets/catalog/bk-chrome-5l.webp" alt="ბისკონტო ქრომი - ავტოშამპუნი 5 ლ" loading="eager" />
+            <img class="bottle b-left" src="assets/catalog/bk-turbo-1l.webp" alt="ბისკონტო ტურბო - ავტოშამპუნი 1 ლ" loading="eager" />
+            <img class="bottle b-right" src="assets/catalog/bk-max-1l.webp" alt="ბისკონტო მაქსი - ავტოშამპუნი 1 ლ" loading="eager" />
+          </div>
           <span class="pill p1"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2s7 6.7 7 12a7 7 0 0 1-14 0c0-5.3 7-12 7-12z"/></svg><span class="i18n" data-ka="100% ბიოდეგრადირებადი" data-en="100% biodegradable">100% ბიოდეგრადირებადი</span></span>
           <span class="pill p2"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span class="i18n" data-ka="ევროპული ხარისხი" data-en="European quality">ევროპული ხარისხი</span></span>
           <div class="tagcard">
@@ -191,7 +217,7 @@
         <a class="card interactive reveal-more reveal" href="services.html" data-delay="0.18">
           <span class="blob"></span>
           <span class="tile accent"><svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></span>
-          <h3 class="i18n" data-ka="ავტოსამრეცხაოს მშენებლობა" data-en="Car-wash construction">ავტოსამრეცხაოს მშენებლობა</h3>
+          <h3 class="i18n" data-ka="ავტოსამრეცხაოს აწყობა" data-en="Car-wash construction">ავტოსამრეცხაოს აწყობა</h3>
           <p class="i18n" data-ka="სრული გადაწყვეტა: დაგეგმვა, მონტაჟი, გაშვება და ტექნიკური მომსახურება." data-en="A turnkey solution: planning, installation, launch and service.">სრული გადაწყვეტა: დაგეგმვა, მონტაჟი, გაშვება და ტექნიკური მომსახურება.</p>
           <span class="more"><span class="i18n" data-ka="გაიგეთ მეტი" data-en="Learn more">გაიგეთ მეტი</span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
@@ -243,7 +269,7 @@
           <a class="btn btn-md btn-primary i18n" href="about.html" style="margin-top:26px" data-ka="გაიგეთ მეტი" data-en="Learn more">გაიგეთ მეტი</a>
         </div>
         <figure class="photo-panel reveal" data-delay="0.12">
-          <img src="assets/facility.webp" alt="ESG-ის ახალი საწარმო და ბრენდირებული ავტოპარკი" loading="lazy" />
+          <img src="assets/facility.png" alt="ESG-ის ახალი საწარმო და ბრენდირებული ავტოპარკი" loading="lazy" />
           <figcaption><span class="i18n" data-ka="ჩვენი ახალი საწარმო - „აწარმოე საქართველოში“" data-en="Our new facility - “Produce in Georgia”">ჩვენი ახალი საწარმო - „აწარმოე საქართველოში“</span></figcaption>
         </figure>
       </div>
@@ -278,8 +304,24 @@
           <img src="assets/esg-drop.png" alt="ESG" style="height:32px" />
           <span class="wm"><span class="name">ESG</span><span class="sub i18n" data-ka="ეკოკემიკა სერვის ჯგუფი" data-en="Ekokemika Service Group">ეკოკემიკა სერვის ჯგუფი</span></span>
         </a>
-        <p class="tagline i18n" data-ka="ბიოდეგრადირებადი ავტოქიმია, აღჭურვილობა და ავტოსამრეცხაოს მშენებლობა." data-en="Biodegradable car chemistry, equipment and car-wash construction.">ბიოდეგრადირებადი ავტოქიმია, აღჭურვილობა და ავტოსამრეცხაოს მშენებლობა.</p>
+        <p class="tagline i18n" data-ka="ბიოდეგრადირებადი ავტოქიმია, აღჭურვილობა და ავტოსამრეცხაოს აწყობა." data-en="Biodegradable car chemistry, equipment and car-wash construction.">ბიოდეგრადირებადი ავტოქიმია, აღჭურვილობა და ავტოსამრეცხაოს აწყობა.</p>
         <span class="web"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>www.esggeorgia.ge</span>
+        <div class="socials">
+          <div class="sgroup">
+            <span class="sname">ESG <span class="i18n" data-ka="ეკოკემიკა" data-en="Ekokemika">ეკოკემიკა</span></span>
+            <span class="sicons">
+              <a href="https://www.facebook.com/ESG.Ekokemika" target="_blank" rel="noopener" aria-label="Facebook - ESG Ekokemika"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg></a>
+              <a href="https://www.instagram.com/esg.ekokemika/" target="_blank" rel="noopener" aria-label="Instagram - ESG Ekokemika"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg></a>
+            </span>
+          </div>
+          <div class="sgroup">
+            <span class="sname">ESG Car Wash Mall</span>
+            <span class="sicons">
+              <a href="https://www.facebook.com/profile.php?id=61590106427028" target="_blank" rel="noopener" aria-label="Facebook - ESG Car Wash Mall"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg></a>
+              <a href="https://www.instagram.com/esgcarwashmall/" target="_blank" rel="noopener" aria-label="Instagram - ESG Car Wash Mall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg></a>
+            </span>
+          </div>
+        </div>
       </div>
       <div>
         <h4 class="i18n" data-ka="ნავიგაცია" data-en="Navigation">ნავიგაცია</h4>
@@ -294,8 +336,8 @@
       <div>
         <h4 class="i18n" data-ka="კონტაქტი" data-en="Contact">კონტაქტი</h4>
         <ul>
-          <li><span class="lk"><svg class="icon" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.5-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2z"/></svg><span class="nm">551 51 91 65</span></span></li>
-          <li><span class="lk"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>ekokemikaservicegroup@gmail.com</span></li>
+          <li><a class="lk" href="tel:+995551519165"><svg class="icon" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.5-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2z"/></svg><span class="nm">551 51 91 65</span></a></li>
+          <li><a class="lk" href="mailto:ekokemikaservicegroup@gmail.com"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>ekokemikaservicegroup@gmail.com</a></li>
           <li><span class="lk"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="i18n" data-ka="ორშ-შაბ: 10:00-18:00 · კვ: 10:00-16:00" data-en="Mon-Sat: 10:00-18:00 · Sun: 10:00-16:00">ორშ-შაბ: 10:00-18:00 · კვ: 10:00-16:00</span></span></li>
         </ul>
       </div>

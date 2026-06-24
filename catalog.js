@@ -210,20 +210,37 @@
       filterHost.style.display = "none";
       current = cats.length ? "all" : "all";
     }
+    var FILTER_ICONS = {
+      all:'<path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>',
+      biskonto:'<path d="M12 2s7 6.7 7 12a7 7 0 0 1-14 0c0-5.3 7-12 7-12z"/>',
+      cosmetics:'<path d="M9 11h6v9a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zM9 7h6M10 7V4h4M18 5l2-1M18 8h2M18 11l2 1"/>',
+      household:'<path d="M3 11l9-7 9 7M5 10v10h14V10"/>',
+      equipment:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>',
+      cloths:'<path d="M12 2 2 7l10 5 10-5zM2 12l10 5 10-5M2 17l10 5 10-5"/>'
+    };
+    function catCount(id) {
+      if (id === "all") return products.length;
+      return products.filter(function (p) { return p.cat === id || (p.cats && p.cats.indexOf(id) !== -1); }).length;
+    }
     var tabDefs = [{ id: "all" }].concat(cats.map(function (c) { return { id: c.id, cat: c }; }));
     filterHost.innerHTML =
-      '<span class="pillslide" aria-hidden="true"></span>' +
       tabDefs.map(function (d, i) {
-        return '<button class="tab" type="button" role="tab" data-id="' + d.id + '" aria-selected="' + (i === 0) + '"></button>';
+        var ic = FILTER_ICONS[d.id] || FILTER_ICONS.all;
+        return '<button class="tab" type="button" role="tab" data-id="' + d.id + '" aria-selected="' + (i === 0) + '">' +
+          '<span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24">' + ic + '</svg></span>' +
+          '<span class="cl"></span>' +
+          '<span class="cn">' + catCount(d.id) + '</span>' +
+        '</button>';
       }).join("");
-    var slide = filterHost.querySelector(".pillslide");
+    var slide = null;
     var buttons = Array.prototype.slice.call(filterHost.querySelectorAll(".tab"));
 
     function relabel() {
       var t = T[lang()];
       buttons.forEach(function (b, i) {
         var d = tabDefs[i];
-        b.textContent = d.id === "all" ? t.all : d.cat.name[lang()];
+        var cl = b.querySelector(".cl");
+        if (cl) cl.textContent = d.id === "all" ? t.all : d.cat.name[lang()];
       });
       relabelSubs();
     }
@@ -265,21 +282,7 @@
       });
     }
 
-    function positionPill(instant) {
-      var btn = filterHost.querySelector('.tab[aria-selected="true"]') || buttons[0];
-      if (!btn) return;
-      if (instant) {
-        var prev = slide.style.transition;
-        slide.style.transition = "none";
-        slide.style.left = btn.offsetLeft + "px";
-        slide.style.width = btn.offsetWidth + "px";
-        void slide.offsetWidth; // force reflow so the jump isn't animated
-        slide.style.transition = prev;
-      } else {
-        slide.style.left = btn.offsetLeft + "px";
-        slide.style.width = btn.offsetWidth + "px";
-      }
-    }
+    function positionPill() { /* chip filter: active state is handled by [aria-selected]; no sliding pill */ }
     function select(btn) {
       buttons.forEach(function (b) { b.setAttribute("aria-selected", String(b === btn)); });
       positionPill();
