@@ -133,6 +133,10 @@
             </div>
           </div>
           <div class="fgroup">
+            <label class="flabel i18n" for="qf-email" data-ka="ელ. ფოსტა (არასავალდებულო)" data-en="Email (optional)">ელ. ფოსტა (არასავალდებულო)</label>
+            <input class="field i18n-attr" data-attr="placeholder" data-ka="თქვენი ელ. ფოსტა" data-en="Your email" id="qf-email" name="email" type="email" placeholder="თქვენი ელ. ფოსტა" />
+          </div>
+          <div class="fgroup">
             <label class="flabel i18n" for="qf-topic" data-ka="რა გაინტერესებთ?" data-en="What are you interested in?">რა გაინტერესებთ?</label>
             <select class="field" id="qf-topic" name="topic" required="required">
               <option value="" disabled="disabled" selected="selected" class="i18n" data-ka="აირჩიეთ თემა" data-en="Choose a topic">აირჩიეთ თემა</option>
@@ -313,7 +317,7 @@
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var l = lang();
-    var name = v("qf-name"), phone = v("qf-phone"),
+    var name = v("qf-name"), phone = v("qf-phone"), email = v("qf-email"),
         topic = document.getElementById("qf-topic").value, msg = v("qf-msg");
     if (okNote) okNote.hidden = true;
     if (errNote) errNote.hidden = true;
@@ -329,6 +333,8 @@
         _template: "table",
         name: name,
         phone: phone,
+        email: email,
+        _replyto: email,
         topic: topic,
         message: msg,
         _honey: form._honey ? form._honey.value : ""
