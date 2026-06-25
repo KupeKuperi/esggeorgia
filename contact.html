@@ -2,7 +2,7 @@
 <html lang="ka">
 <head>
 <meta charset="UTF-8" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://*.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://*.google.com; connect-src 'self' https://formsubmit.co; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>კონტაქტი | ავტოშამპუნი და სამრეცხაოს ინვენტარი - ESG თბილისი</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -146,11 +146,13 @@
             <label class="flabel i18n" for="qf-msg" data-ka="შეტყობინება" data-en="Message">შეტყობინება</label>
             <textarea class="field i18n-attr" data-attr="placeholder" data-ka="მოგვწერეთ დეტალები…" data-en="Tell us the details…" id="qf-msg" name="message" rows="4" placeholder="მოგვწერეთ დეტალები…"></textarea>
           </div>
+          <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
           <div class="send">
             <button class="btn btn-lg btn-primary i18n" type="submit" data-ka="მოთხოვნის გაგზავნა" data-en="Send request">მოთხოვნის გაგზავნა</button>
             <span class="form-note"><span class="i18n" data-ka="ან დაგვირეკეთ:" data-en="or call us:">ან დაგვირეკეთ:</span> <a href="tel:+995551519165">551 51 91 65</a></span>
           </div>
-          <p class="sent-note" id="quote-sent" hidden="hidden"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg><span class="i18n" data-ka="გაიხსნა ელფოსტის ფანჯარა თქვენი მოთხოვნით - გაგზავნეთ და მალე გიპასუხებთ." data-en="Your email app opened with the request - send it and we’ll get back to you soon.">გაიხსნა ელფოსტის ფანჯარა თქვენი მოთხოვნით - გაგზავნეთ და მალე გიპასუხებთ.</span></p>
+          <p class="sent-note" id="quote-sent" hidden="hidden"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg><span class="msg"></span></p>
+          <p class="sent-note err" id="quote-error" hidden="hidden"><svg class="icon" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span class="msg"></span></p>
         </form>
       </div>
     </div>
@@ -285,21 +287,61 @@
 <script src="app.js"></script>
 <script>
 (function () {
+  var ENDPOINT = "https://formsubmit.co/ajax/ekokemikaservicegroup@gmail.com";
   var form = document.getElementById("quote-form");
   if (!form) return;
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var l = (window.ESG && window.ESG.lang && window.ESG.lang()) || "ka";
-    var name = form.name.value.trim(), phone = form.phone.value.trim(),
-        topic = form.topic.value, msg = form.message.value.trim();
+  var okNote = document.getElementById("quote-sent");
+  var errNote = document.getElementById("quote-error");
+  var btn = form.querySelector('button[type="submit"]');
+  var MSG = {
+    sent:  { ka: "მადლობა! თქვენი მოთხოვნა გაიგზავნა — მალე დაგიკავშირდებით.",
+             en: "Thank you! Your request has been sent — we’ll get back to you soon." },
+    error: { ka: "ვერ გაიგზავნა. გთხოვთ, სცადოთ ხელახლა ან დაგვირეკეთ: 551 51 91 65",
+             en: "Couldn’t send. Please try again or call us: 551 51 91 65" }
+  };
+  function lang() { return (window.ESG && window.ESG.lang && window.ESG.lang()) || "ka"; }
+  function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ""; }
+  function setMsg(note, txt) { if (!note) return; var m = note.querySelector(".msg"); if (m) m.textContent = txt; note.hidden = false; }
+  function mailtoFallback(name, phone, topic, msg, l) {
     var subject = (l === "en" ? "Quote request - " : "ფასის მოთხოვნა - ") + topic;
     var lines = l === "en"
       ? ["Name: " + name, "Phone: " + phone, "Topic: " + topic, "", "Message:", msg]
       : ["სახელი: " + name, "ტელეფონი: " + phone, "თემა: " + topic, "", "შეტყობინება:", msg];
     window.location.href = "mailto:ekokemikaservicegroup@gmail.com?subject=" +
       encodeURIComponent(subject) + "&body=" + encodeURIComponent(lines.join("\n"));
-    var note = document.getElementById("quote-sent");
-    if (note) note.hidden = false;
+  }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var l = lang();
+    var name = v("qf-name"), phone = v("qf-phone"),
+        topic = document.getElementById("qf-topic").value, msg = v("qf-msg");
+    if (okNote) okNote.hidden = true;
+    if (errNote) errNote.hidden = true;
+    if (typeof fetch !== "function") { mailtoFallback(name, phone, topic, msg, l); return; }
+    var restore = btn ? btn.textContent : "";
+    if (btn) { btn.disabled = true; btn.textContent = (l === "en" ? "Sending…" : "იგზავნება…"); }
+    fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        _subject: (l === "en" ? "Quote request - " : "ფასის მოთხოვნა - ") + topic,
+        _captcha: "false",
+        _template: "table",
+        name: name,
+        phone: phone,
+        topic: topic,
+        message: msg,
+        _honey: form._honey ? form._honey.value : ""
+      })
+    })
+    .then(function (r) { return r.json().catch(function () { return {}; }); })
+    .then(function (data) {
+      var ok = data && (data.success === true || data.success === "true");
+      if (ok) { form.reset(); setMsg(okNote, MSG.sent[l]); }
+      else { setMsg(errNote, MSG.error[l]); }
+    })
+    .catch(function () { setMsg(errNote, MSG.error[l]); })
+    .then(function () { if (btn) { btn.disabled = false; btn.textContent = restore; } });
   });
 })();
 </script>
