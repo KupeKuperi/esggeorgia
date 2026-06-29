@@ -411,7 +411,8 @@ html.js .reveal.in{opacity:1; transform:none;}
 .pc.shampoo .bar{background:linear-gradient(90deg,var(--brand-700),var(--brand-500));}
 .pc.biskonto .bar{background:linear-gradient(90deg,var(--brand-700),var(--brand-500));}
 .pc.cosmetics .bar{background:linear-gradient(90deg,var(--brand-500),var(--accent));}
-.pc .stage{position:relative; aspect-ratio:4/3; overflow:hidden; background:radial-gradient(120% 92% at 50% 14%,#fff 0%,var(--surface-2) 72%);}
+.pc .stage{position:relative; aspect-ratio:4/3; overflow:hidden; background:radial-gradient(125% 95% at 50% 4%,#ffffff 0%,var(--brand-50) 60%,var(--bg-subtle) 100%);}
+.pc .stage::before{content:""; position:absolute; left:50%; top:45%; width:76%; height:66%; transform:translate(-50%,-50%); border-radius:50%; background:radial-gradient(closest-side, color-mix(in oklab, var(--brand-300) 30%, transparent), transparent 72%); filter:blur(24px); pointer-events:none;}
 /* default: clean cut-out friendly (contain). Add data-crop for messy scans (cover+zoom). */
 .pc .stage img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:14px; transition:transform .45s var(--ease-brand);}
 .pc:hover .stage img{transform:scale(1.05);}
