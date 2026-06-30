@@ -55,18 +55,53 @@ function abs(p) {
   return SITE + "/" + String(p || "").replace(/^\/+/, "");
 }
 
+/* prices for a product (per-size codes, or the single product code) */
+function priceList(p, prices) {
+  const out = [];
+  if (p.sizes && p.sizes.length) {
+    for (const s of p.sizes) { const v = prices[s.code]; if (typeof v === "number") out.push(v); }
+  } else if (p.code && typeof prices[p.code] === "number") out.push(prices[p.code]);
+  return out;
+}
+
+/* Product JSON-LD — only for products that have a price, so it's valid for
+   Google product rich results (image + price). No price → no markup (avoids
+   "invalid product" warnings). */
+function productLD(p, prices, nameKa, desc, canonical, ogImage) {
+  const pl = priceList(p, prices);
+  if (!pl.length) return "";
+  const low = Math.min(...pl), high = Math.max(...pl);
+  const offers = (low === high)
+    ? { "@type": "Offer", price: low, priceCurrency: "GEL", availability: "https://schema.org/InStock", url: canonical }
+    : { "@type": "AggregateOffer", lowPrice: low, highPrice: high, offerCount: pl.length, priceCurrency: "GEL", availability: "https://schema.org/InStock", url: canonical };
+  const obj = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: nameKa,
+    image: [ogImage],
+    description: desc,
+    brand: { "@type": "Brand", name: "ESG" },
+    category: CAT_LABEL_KA[p.cat] || "პროდუქცია",
+    offers: offers,
+  };
+  const sku = (p.sizes && p.sizes[0] && p.sizes[0].code) || p.code;
+  if (sku) obj.sku = String(sku);
+  return '<script type="application/ld+json">' + JSON.stringify(obj) + "</script>\n";
+}
+
 /* ---------- 1. load the product data exactly like the browser does ---------- */
 function loadData() {
   const sandbox = { window: {}, document: { addEventListener() {} }, console };
   vm.createContext(sandbox);
-  for (const file of ["catalog-data.js", "equipment-data.js", "towels-data.js"]) {
+  for (const file of ["catalog-data.js", "equipment-data.js", "towels-data.js", "prices-data.js"]) {
     const full = path.join(ROOT, file);
     if (!fs.existsSync(full)) continue;
     vm.runInContext(fs.readFileSync(full, "utf8"), sandbox, { filename: file });
   }
   const products = sandbox.window.ESG_PRODUCTS || [];
   const categories = sandbox.window.ESG_CATEGORIES || [];
-  return { products, categories };
+  const prices = sandbox.window.ESG_PRICES || {};
+  return { products, categories, prices };
 }
 
 /* ---------- 2. copy the whole site into dist/ ---------- */
@@ -82,7 +117,7 @@ function copySite() {
 }
 
 /* ---------- 3. build one real page per product ---------- */
-function buildProductPages(products) {
+function buildProductPages(products, prices) {
   const template = fs.readFileSync(path.join(ROOT, "product.html"), "utf8");
   let count = 0;
 
@@ -139,6 +174,10 @@ function buildProductPages(products) {
         `<link rel="canonical" href="${canonical}" />`
     );
 
+    /* product rich-result markup (image + price) for priced products */
+    const ld = productLD(p, prices, nameKa, desc, canonical, ogImage);
+    if (ld) html = html.replace("</head>", ld + "</head>");
+
     const dir = path.join(DIST, "products", slug);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, "index.html"), html, "utf8");
@@ -176,9 +215,9 @@ function buildSitemap(products) {
 
 /* ---------- run ---------- */
 function main() {
-  const { products, categories } = loadData();
+  const { products, categories, prices } = loadData();
   copySite();
-  const pages = buildProductPages(products);
+  const pages = buildProductPages(products, prices);
   buildSitemap(products);
   console.log(
     `ESG build OK → dist/\n` +
