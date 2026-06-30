@@ -111,6 +111,47 @@
     return hit || sizes[0];
   }
 
+  function priceText(code, l) {
+    var v = window.ESG_PRICE_OF ? window.ESG_PRICE_OF(code) : null;
+    return (v != null) ? window.ESG_FMT_PRICE(v) : (l === "en" ? "on request" : "მოთხოვნით");
+  }
+
+  /* add-to-cart block (quantity stepper + button) injected into the detail */
+  function acBlock(l) {
+    var q = (l === "en" ? "Quantity" : "რაოდენობა");
+    return '<div class="addcart" id="addcart">' +
+      '<div class="addcart-row">' +
+        '<div class="qty" role="group" aria-label="' + q + '">' +
+          '<button class="qty-btn" type="button" id="ac-dec" aria-label="−"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>' +
+          '<input class="qty-input" id="ac-qty" type="text" inputmode="numeric" value="1" aria-label="' + q + '" />' +
+          '<button class="qty-btn" type="button" id="ac-inc" aria-label="+"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>' +
+        '</div>' +
+        '<button class="btn btn-lg btn-primary addcart-btn" id="add-to-cart">' +
+          (l === "en" ? "Add to cart" : "კალათაში დამატება") + '</button>' +
+      '</div>' +
+    '</div>';
+  }
+  /* getSel() returns the current {l, code, img} to add */
+  function wireAdd(p, l, getSel) {
+    var host = document.getElementById("product-detail");
+    var dec = host.querySelector("#ac-dec"), inc = host.querySelector("#ac-inc"),
+        qty = host.querySelector("#ac-qty"), add = host.querySelector("#add-to-cart");
+    if (!add) return;
+    function q() { var n = parseInt(qty.value, 10); return (isNaN(n) || n < 1) ? 1 : n; }
+    if (dec) dec.addEventListener("click", function () { qty.value = Math.max(1, q() - 1); });
+    if (inc) inc.addEventListener("click", function () { qty.value = q() + 1; });
+    if (qty) qty.addEventListener("change", function () { qty.value = q(); });
+    add.addEventListener("click", function () {
+      if (!window.ESG_CART) return;
+      var s = getSel();
+      window.ESG_CART.add({
+        slug: p.slug, name: p.name, l: s.l, code: s.code,
+        price: (window.ESG_PRICE_OF ? window.ESG_PRICE_OF(s.code) : null),
+        img: s.img || p.img, qty: q()
+      });
+    });
+  }
+
   function renderCrumbs(p, l) {
     var t = T[l], host = document.getElementById("crumbs");
     if (!host) return;
@@ -168,13 +209,15 @@
 
     host.innerHTML =
       '<div class="pd-info">' +
-        '<span class="eyebrow"><span class="idx">01</span>' + catLabel + "</span>" +
+        '<span class="eyebrow">' + catLabel + "</span>" +
         "<h1>" + p.name[l] + "</h1>" +
         '<p class="lede">' + p.blurb[l] + "</p>" +
         '<span class="chip">' + svg("drop", 15) + p.dilution[l] + "</span>" +
         '<div class="pd-block"><p class="lbl">' + t.size + '</p>' +
           '<div class="pd-sizes" role="group" aria-label="' + t.size + '">' + sizeBtns + "</div>" +
           '<p class="pd-codeline">' + t.code + ' · <span class="cd" id="sel-code">' + (sel.code ? "#" + sel.code : "-") + "</span></p>" +
+          '<p class="pd-priceline">' + (l === "en" ? "Price" : "ფასი") + ' · <span class="pv" id="sel-price">' + priceText(sel.code, l) + "</span></p>" +
+          acBlock(l) +
         "</div>" +
         '<div class="pd-block"><p class="lbl">' + t.facts + '</p><ul class="pd-facts">' + facts + "</ul></div>" +
         usageBlock +
@@ -214,6 +257,8 @@
         });
         rows.forEach(function (r) { r.classList.toggle("on", parseFloat(r.dataset.l) === litre); });
         if (codeEl) codeEl.textContent = b.dataset.code ? "#" + b.dataset.code : "-";
+        var priceEl = host.querySelector("#sel-price");
+        if (priceEl) priceEl.textContent = priceText(b.dataset.code, l);
         if (photo) {
           photo.classList.add("swap");
           var next = b.dataset.img;
@@ -227,6 +272,7 @@
         }
       });
     });
+    wireAdd(p, l, function () { return currentSize(p); });
   }
 
   function renderSimilar(p, l) {
@@ -287,7 +333,8 @@
     var facts = [
       { i: "tag", k: t.category, v: subLabel },
       { i: "cog", k: t.spec, v: (p.spec ? p.spec[l] : "-") },
-      { i: "hash", k: t.code, v: (p.code ? "#" + p.code : "-") }
+      { i: "hash", k: t.code, v: (p.code ? "#" + p.code : "-") },
+      { i: "tag", k: (l === "en" ? "Price" : "ფასი"), v: priceText(p.code, l) }
     ].map(function (f) {
       return '<li><span class="fi">' + svg(f.i) + '</span><span class="ft"><span class="k">' +
         f.k + '</span><span class="v">' + f.v + "</span></span></li>";
@@ -295,11 +342,12 @@
 
     host.innerHTML =
       '<div class="pd-info">' +
-        '<span class="eyebrow"><span class="idx">01</span>' + subLabel + "</span>" +
+        '<span class="eyebrow">' + subLabel + "</span>" +
         "<h1>" + p.name[l] + "</h1>" +
         (p.blurb ? '<p class="lede">' + p.blurb[l] + "</p>" : "") +
         (p.spec ? '<span class="chip">' + svg("cog", 15) + p.spec[l] + "</span>" : "") +
         '<div class="pd-block"><p class="lbl">' + t.facts + '</p><ul class="pd-facts">' + facts + "</ul></div>" +
+        acBlock(l) +
         '<div class="pd-actions">' +
           '<a class="btn btn-lg btn-primary" href="contact.html">' + t.quote + svg("arrow", 17) + "</a>" +
           '<a class="btn btn-lg btn-outline" href="products.html">' + svg("back", 17) + t.back + "</a>" +
@@ -314,6 +362,7 @@
       "</div>";
 
     document.title = "ESG - " + p.name[l];
+    wireAdd(p, l, function () { return { l: null, code: p.code, img: p.img }; });
   }
 
   function renderAll() {

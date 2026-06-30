@@ -51,6 +51,23 @@
     return '<svg class="icon" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   }
 
+  /* price chip for a card: lowest price across sizes ("from") for multi-size,
+     a single price otherwise. Empty string when no price is known. */
+  function cardPriceHTML(p, lang) {
+    if (!window.ESG_PRICE_OF) return "";
+    var vals = [];
+    if (p.sizes && p.sizes.length) {
+      p.sizes.forEach(function (s) { var v = window.ESG_PRICE_OF(s.code); if (v != null) vals.push(v); });
+    } else if (p.code) {
+      var v = window.ESG_PRICE_OF(p.code); if (v != null) vals.push(v);
+    }
+    if (!vals.length) return "";
+    var min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
+    var val = window.ESG_FMT_PRICE(min);
+    var body = (max !== min) ? (lang === "en" ? "from " + val : val + "-დან") : val;
+    return '<div class="pc-price">' + body + "</div>";
+  }
+
   /* ---- equipment card (hardware: no dilution / no liters) ---- */
   function equipmentCardHTML(p, lang) {
     var t = T[lang];
@@ -70,6 +87,7 @@
           (p.blurb ? '<p class="blurb">' + p.blurb[lang] + "</p>" : "") +
           (p.spec ? '<span class="chip eq-spec">' + svgSpec() + p.spec[lang] + "</span>" : "") +
           (p.code ? '<div class="eq-code">' + t.code + ' · <span class="cd">#' + p.code + "</span></div>" : "") +
+          cardPriceHTML(p, lang) +
           '<div class="quote"><a class="pc-cta" href="' + href + '">' + t.details + svgArrow() + "</a></div>" +
         "</div>" +
       "</article>"
@@ -131,6 +149,7 @@
           '<p class="blurb">' + p.blurb[lang] + "</p>" +
           '<span class="chip">' + svgDrop() + p.dilution[lang] + "</span>" +
           sizeChips +
+          cardPriceHTML(p, lang) +
           '<div class="quote"><a class="pc-cta" href="' + href + '">' + t.details + svgArrow() + "</a></div>" +
         "</div>" +
       "</article>"
