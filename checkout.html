@@ -7,15 +7,16 @@
 <title>გაფორმება | ESG - ეკოკემიკა სერვის ჯგუფი</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400..900&family=Noto+Serif+Georgian:wght@500..700&display=swap" rel="stylesheet" />
 <meta name="description" content="ESG - შეკვეთის გაფორმება. მიწოდება და გადახდა საბანკო გადარიცხვით ან კურიერთან." />
 <meta name="robots" content="noindex, follow" />
 <link rel="canonical" href="https://esggeorgia.ge/checkout.html" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="ESG - Ekokemika Service Group" />
+<meta property="og:locale" content="ka_GE" />
 <meta property="og:title" content="გაფორმება | ESG" />
 <meta property="og:description" content="შეკვეთის გაფორმება - მიწოდება და გადახდა." />
-<meta property="og:image" content="assets/facility.webp" />
+<meta property="og:image" content="https://esggeorgia.ge/assets/facility.webp" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" href="/assets/esg-favicon.png" />
 <link rel="apple-touch-icon" href="/assets/esg-favicon.png" />
@@ -23,6 +24,7 @@
 <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
+<a class="skip-link i18n" href="#main" data-ka="მთავარ შინაარსზე გადასვლა" data-en="Skip to content">მთავარ შინაარსზე გადასვლა</a>
 
 <header class="site-header">
   <div class="container">
@@ -72,7 +74,7 @@
   </div>
 </header>
 
-<main>
+<main id="main">
   <!-- PAGE HERO -->
   <section class="page-hero">
     <div class="grid bg-grid"></div><div class="glow"></div>
@@ -88,16 +90,24 @@
   <section class="section">
     <div class="container">
 
-      <!-- ====== SUCCESS / CONFIRMATION (hidden; demo link #order-success shows it) ====== -->
+      <!-- ====== SUCCESS / CONFIRMATION (cart.js fills the reference + note and toggles .is-shown) ====== -->
       <div id="order-success" class="order-success">
         <span class="os-ico"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
-        <h2 class="i18n" data-ka="შეკვეთა მიღებულია!" data-en="Order received!">შეკვეთა მიღებულია!</h2>
-        <p class="i18n" data-ka="მადლობა! თქვენი შეკვეთა მიღებულია. ჩვენი გუნდი მალე დაგიკავშირდებათ დადასტურებისა და მიწოდების დეტალებისთვის." data-en="Thank you! Your order has been received. Our team will contact you shortly to confirm and arrange delivery.">მადლობა! თქვენი შეკვეთა მიღებულია. ჩვენი გუნდი მალე დაგიკავშირდებათ დადასტურებისა და მიწოდების დეტალებისთვის.</p>
-        <span class="order-ref">#ESG-2026-0001</span>
+        <h2 id="os-title" class="i18n" data-ka="შეკვეთა მიღებულია!" data-en="Order received!">შეკვეთა მიღებულია!</h2>
+        <p id="os-text" class="i18n" data-ka="მადლობა! თქვენი შეკვეთა მიღებულია. ჩვენი გუნდი მალე დაგიკავშირდებათ დადასტურებისა და მიწოდების დეტალებისთვის." data-en="Thank you! Your order has been received. Our team will contact you shortly to confirm and arrange delivery.">მადლობა! თქვენი შეკვეთა მიღებულია. ჩვენი გუნდი მალე დაგიკავშირდებათ დადასტურებისა და მიწოდების დეტალებისთვის.</p>
+        <span class="order-ref" hidden></span>
         <div class="os-actions">
           <a class="btn btn-md btn-primary i18n" href="index.html" data-ka="მთავარ გვერდზე" data-en="Back to home">მთავარ გვერდზე</a>
           <a class="btn btn-md btn-outline i18n" href="products.html" data-ka="განაგრძეთ ყიდვა" data-en="Continue shopping">განაგრძეთ ყიდვა</a>
         </div>
+      </div>
+
+      <!-- ====== EMPTY CART (cart.js toggles .is-shown when there is nothing to order) ====== -->
+      <div id="checkout-empty" class="co-empty">
+        <span class="ce-ico"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2.5 3h2.2l2.2 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 7H6.2"/></svg></span>
+        <h2 class="i18n" data-ka="კალათა ცარიელია" data-en="Your cart is empty">კალათა ცარიელია</h2>
+        <p class="i18n" data-ka="დაამატეთ პროდუქცია კატალოგიდან და დაბრუნდით გაფორმებაზე." data-en="Add products from the catalog and come back to checkout.">დაამატეთ პროდუქცია კატალოგიდან და დაბრუნდით გაფორმებაზე.</p>
+        <a class="btn btn-lg btn-primary i18n" href="products.html" data-ka="პროდუქციის ნახვა" data-en="Browse products">პროდუქციის ნახვა</a>
       </div>
 
       <!-- ====== CHECKOUT (order summary + delivery form) ====== -->
@@ -105,7 +115,7 @@
 
         <!-- delivery form -->
         <div class="co-form-col">
-          <h2 class="section-sub" style="margin-top:0" data-ka="მიწოდების მონაცემები" data-en="Delivery details">მიწოდების მონაცემები</h2>
+          <h2 class="section-sub i18n" style="margin-top:0" data-ka="მიწოდების მონაცემები" data-en="Delivery details">მიწოდების მონაცემები</h2>
           <form id="order-form" class="quote-form" style="margin-top:18px" novalidate>
             <div class="frow cols-2">
               <div class="fgroup">
@@ -151,41 +161,16 @@
           </form>
         </div>
 
-        <!-- order summary (SAMPLE items — match the cart) -->
+        <!-- order summary (rendered from the cart by cart.js) -->
         <aside class="co-sum-col">
           <div class="co-sum">
             <h2 class="i18n" data-ka="თქვენი შეკვეთა" data-en="Your order">თქვენი შეკვეთა</h2>
-            <ul class="co-items" id="order-items">
-              <li class="co-item">
-                <img class="co-thumb" src="assets/catalog/bk-classic-5l.webp" alt="" />
-                <div>
-                  <div class="co-iname">ბისკონტო კლასიკი</div>
-                  <div class="co-imeta"><span class="i18n" data-ka="5 ლ" data-en="5 L">5 ლ</span> · #64721 · <span class="co-iqty i18n" data-ka="× 2" data-en="× 2">× 2</span></div>
-                </div>
-                <span class="co-iline">40 ₾</span>
-              </li>
-              <li class="co-item">
-                <img class="co-thumb" src="assets/catalog/super-glass-1l.webp" alt="" />
-                <div>
-                  <div class="co-iname">სუპერ გლასი</div>
-                  <div class="co-imeta"><span class="i18n" data-ka="1 ლ" data-en="1 L">1 ლ</span> · <span class="co-iqty i18n" data-ka="× 1" data-en="× 1">× 1</span></div>
-                </div>
-                <span class="co-iline req i18n" data-ka="მოთხოვნით" data-en="On request">მოთხოვნით</span>
-              </li>
-              <li class="co-item">
-                <img class="co-thumb" src="assets/catalog/black-lux-1l.webp" alt="" />
-                <div>
-                  <div class="co-iname">შავი ლუქსი</div>
-                  <div class="co-imeta"><span class="i18n" data-ka="1 ლ" data-en="1 L">1 ლ</span> · #64988 · <span class="co-iqty i18n" data-ka="× 4" data-en="× 4">× 4</span></div>
-                </div>
-                <span class="co-iline">100 ₾</span>
-              </li>
-            </ul>
+            <ul class="co-items" id="order-items"></ul>
 
             <div class="co-totals">
-              <div class="co-row"><span class="i18n" data-ka="ჯამი (ფასიანი ნივთები)" data-en="Subtotal (priced items)">ჯამი (ფასიანი ნივთები)</span><span class="v" id="order-subtotal">140 ₾</span></div>
-              <div class="co-row quote"><span class="i18n" data-ka="ფასდება ცალკე" data-en="To be quoted">ფასდება ცალკე</span><span class="i18n" data-ka="1 ნივთი" data-en="1 item">1 ნივთი</span></div>
-              <div class="co-row total"><span class="i18n" data-ka="სულ" data-en="Total">სულ</span><span class="v" id="order-total">140 ₾</span></div>
+              <div class="co-row"><span class="i18n" data-ka="ჯამი (ფასიანი ნივთები)" data-en="Subtotal (priced items)">ჯამი (ფასიანი ნივთები)</span><span class="v" id="order-subtotal">—</span></div>
+              <div class="co-row quote" hidden><span class="i18n" data-ka="ფასდება ცალკე" data-en="To be quoted">ფასდება ცალკე</span><span class="v"></span></div>
+              <div class="co-row total"><span class="i18n" data-ka="სულ" data-en="Total">სულ</span><span class="v" id="order-total">—</span></div>
             </div>
 
             <div class="pay-note">
@@ -247,6 +232,6 @@
 
 <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 <script src="app.js"></script>
-<script src="cart.js?v=1"></script>
+<script src="cart.js?v=2"></script>
 </body>
 </html>

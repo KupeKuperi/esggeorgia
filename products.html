@@ -7,7 +7,7 @@
 <title>ავტოშამპუნი კატალოგი | ავტოქიმია - ESG ეკოკემიკა სერვის ჯგუფი</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400..900&family=Noto+Serif+Georgian:wght@500..700&display=swap" rel="stylesheet" />
 <meta name="description" content="ავტოშამპუნი და ავტოქიმიის სრული კატალოგი - უკონტაქტო შამპუნები, ფენაქი, ცვილი, სამრეცხაოს ინვენტარი. ქართული წარმოება ევროპული ხარისხით. ESG თბილისი." />
 <meta name="keywords" content="ავტოშამპუნი, უკონტაქტო ავტოშამპუნი, ავტოქიმია, სამრეცხაოს ინვენტარი, ავტოსამრეცხაო ნაწილები, თვითმომსახურების ავტოსამრეცხაოს აღჭურვილობა, თვითმომსახურების ავტოსამრეცხაოს ინვენტარი, ავტოსამპუნი, ესგ, car wash shampoo, autoshampoo georgia, self service car wash equipment, self service car wash inventory, avtoshampuni, avtosamrecxao nawilebi, ავტოკოსმეტიკა, ფენაქი, ცვილი მანქანისთვის" />
 <meta name="robots" content="index, follow" />
@@ -15,6 +15,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://esggeorgia.ge/products.html" />
 <meta property="og:site_name" content="ESG - Ekokemika Service Group" />
+<meta property="og:locale" content="ka_GE" />
 <meta property="og:title" content="ავტოშამპუნი კატალოგი | ავტოქიმია - ESG" />
 <meta property="og:description" content="ავტოშამპუნი და ავტოქიმიის სრული კატალოგი - უკონტაქტო შამპუნები, სამრეცხაოს ინვენტარი. ESG თბილისი." />
 <meta property="og:image" content="https://esggeorgia.ge/assets/fac-hero.jpg" />
@@ -25,6 +26,7 @@
 <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
+<a class="skip-link i18n" href="#main" data-ka="მთავარ შინაარსზე გადასვლა" data-en="Skip to content">მთავარ შინაარსზე გადასვლა</a>
 
 <header class="site-header">
   <div class="container">
@@ -74,7 +76,7 @@
   </div>
 </header>
 
-<main>
+<main id="main">
   <!-- PAGE HERO -->
   <section class="page-hero">
     <div class="grid bg-grid"></div><div class="glow"></div>
@@ -91,7 +93,7 @@
   <section class="section">
     <div class="container">
       <div class="catalog-controls">
-        <div id="product-filters" class="filters" role="tablist" aria-label="Filter products"></div>
+        <div id="product-filters" class="filters" role="group" aria-label="Filter products"></div>
         <div id="product-subfilters" class="subfilters" aria-label="Filter subcategories" hidden></div>
         <div class="psearch">
           <svg class="icon ps-ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
@@ -101,12 +103,12 @@
           </button>
         </div>
       </div>
-      <div class="catalog-meta"><span id="product-count"></span></div>
+      <div class="catalog-meta" aria-live="polite"><span id="product-count"></span></div>
       <div id="product-grid" class="product-grid"></div>
       <p id="product-empty" class="empty-state" hidden>
         <span class="i18n" data-ka="ვერაფერი მოიძებნა - სცადეთ სხვა საძიებო სიტყვა." data-en="Nothing found - try a different search term.">ვერაფერი მოიძებნა - სცადეთ სხვა საძიებო სიტყვა.</span>
       </p>
-      <p class="coming i18n" data-ka="ფასის გასაგებად დაგვიკავშირდით ან მოითხოვეთ შეთავაზება. კატალოგის დანარჩენი ხაზები (აღჭურვილობა, მიკროფიბრა) ეტაპობრივად ემატება." data-en="For pricing, contact us or request an offer. The remaining catalog lines (equipment, microfiber) are being added in stages.">ფასის გასაგებად დაგვიკავშირდით ან მოითხოვეთ შეთავაზება. კატალოგის დანარჩენი ხაზები (აღჭურვილობა, მიკროფიბრა) ეტაპობრივად ემატება.</p>
+      <p class="coming i18n" data-ka="პროდუქტებზე, რომლებზეც ფასი მითითებული არ არის, დაგვიკავშირდით ან მოითხოვეთ შეთავაზება." data-en="For items without a listed price, contact us or request an offer.">პროდუქტებზე, რომლებზეც ფასი მითითებული არ არის, დაგვიკავშირდით ან მოითხოვეთ შეთავაზება.</p>
     </div>
   </section>
 
@@ -194,7 +196,7 @@
 <script src="towels-data.js"></script>
 <script src="prices-data.js?v=1"></script>
 <script src="app.js"></script>
-<script src="cart.js?v=1"></script>
-<script src="catalog.js?v=1"></script>
+<script src="cart.js?v=2"></script>
+<script src="catalog.js?v=2"></script>
 </body>
 </html>

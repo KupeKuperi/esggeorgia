@@ -7,7 +7,7 @@
 <title>ავტოშამპუნი, ავტოქიმია თბილისი | ESG - ეკოკემიკა სერვის ჯგუფი</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400..900&family=Noto+Serif+Georgian:wght@500..700&display=swap" rel="stylesheet" />
 <meta name="description" content="ESG - ავტოშამპუნი, ავტოქიმია და სამრეცხაოს ინვენტარი თბილისში. ბიოდეგრადირებადი ქართული წარმოება. სამრეცხაოს აწყობა და აღჭურვა გარანტიით. ☎ 551 51 91 65" />
 <meta name="keywords" content="ავტოშამპუნი, ავტოქიმია, სამრეცხაოს ინვენტარი, სამრეცხაოს აწყობა, autoshampoo tbilisi, ავტოქიმია თბილისი, უკონტაქტო ავტოშამპუნი, ავტოსამრეცხაო, თვითმომსახურების ავტოსამრეცხაო, ავტოსამრეცხაო ნაწილები, ესგ, ეკოკემიკა, ავტოსამპუნი, car wash chemistry georgia, car shampoo tbilisi, self service car wash equipment, autoqimia, avtoshampuni, avtosamrecxao, samrecxao, esg, ekokemika" />
 <meta name="robots" content="index, follow" />
@@ -17,6 +17,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://esggeorgia.ge/" />
 <meta property="og:site_name" content="ESG - Ekokemika Service Group" />
+<meta property="og:locale" content="ka_GE" />
 <meta property="og:title" content="ავტოშამპუნი და ავტოქიმია თბილისი | ESG ეკოკემიკა სერვის ჯგუფი" />
 <meta property="og:description" content="ავტოშამპუნი, ავტოქიმია და სამრეცხაოს ინვენტარი თბილისში. ბიოდეგრადირებადი ქართული წარმოება ევროპული ხარისხით." />
 <meta property="og:image" content="https://esggeorgia.ge/assets/fac-hero.jpg" />
@@ -38,6 +39,7 @@
   "url": "https://esggeorgia.ge",
   "logo": "https://esggeorgia.ge/assets/esg-drop.png",
   "image": "https://esggeorgia.ge/assets/fac-hero.jpg",
+  "sameAs": ["https://www.facebook.com/ESG.Ekokemika", "https://www.instagram.com/esg.ekokemika/"],
   "description": "Biodegradable car chemistry and auto-cosmetics produced to European standards, car-wash equipment, and turnkey car-wash construction in Georgia.",
   "telephone": "+995551519165",
   "email": "ekokemikaservicegroup@gmail.com",
@@ -73,7 +75,8 @@
 }
 </script>
 </head>
-<body style="background-color: rgb(255, 255, 255)">
+<body>
+<a class="skip-link i18n" href="#main" data-ka="მთავარ შინაარსზე გადასვლა" data-en="Skip to content">მთავარ შინაარსზე გადასვლა</a>
 
 <!-- ===================== HEADER ===================== -->
 <header class="site-header">
@@ -133,7 +136,7 @@
   </div>
 </header>
 
-<main>
+<main id="main">
 
   <!-- ===================== HERO ===================== -->
   <section class="hero">
@@ -179,9 +182,15 @@
             <img class="bottle b-right" src="assets/catalog/bk-max-1l.webp" alt="ბისკონტო მაქსი - ავტოშამპუნი 1 ლ" loading="eager" />
           </div>
           <span class="pill p1 eco"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2s7 6.7 7 12a7 7 0 0 1-14 0c0-5.3 7-12 7-12z"/></svg><span class="i18n" data-ka="100% ბიოდეგრადირებადი" data-en="100% biodegradable">100% ბიოდეგრადირებადი</span></span>
-          <span class="pill p2"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span class="i18n" data-ka="ევროპული ხარისხი" data-en="European quality">ევროპული ხარისხი</span></span>
+          <span class="mig-roundel" aria-hidden="true">
+            <svg viewBox="0 0 100 100">
+              <defs><path id="mig-circle" d="M50 50 m-37 0 a37 37 0 1 1 74 0 a37 37 0 1 1 -74 0"/></defs>
+              <circle class="disc" cx="50" cy="50" r="49"/>
+              <g class="ring"><text><textPath href="#mig-circle" startOffset="0">ქართული წარმოება · MADE IN GEORGIA ·</textPath></text></g>
+              <path class="drop" d="M50 34 s12.8 12.3 12.8 22 a12.8 12.8 0 0 1 -25.6 0 c0 -9.7 12.8 -22 12.8 -22 z"/>
+            </svg>
+          </span>
           <div class="tagcard">
-            <span class="spark"></span>
             <span class="logomark"><img src="assets/esg-drop.png" alt="" /></span>
             <span class="tc-txt">
               <span class="tc-k">BISKONTO</span>
@@ -210,14 +219,14 @@
           <p class="i18n" data-ka="ბიოდეგრადირებადი ავტოშამპუნები, აქტიური ფენა, საბურავისა და შუშის საშუალებები." data-en="Biodegradable shampoos, active foam, tire and glass products.">ბიოდეგრადირებადი ავტოშამპუნები, აქტიური ფენა, საბურავისა და შუშის საშუალებები.</p>
           <span class="more"><span class="i18n" data-ka="გაიგეთ მეტი" data-en="Learn more">გაიგეთ მეტი</span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
-        <a class="card interactive reveal-more reveal" href="services.html" data-delay="0.06">
+        <a class="card interactive reveal-more reveal" href="products.html?cat=equipment" data-delay="0.06">
           <span class="blob"></span>
           <span class="tile"><svg class="icon" viewBox="0 0 24 24"><path d="M14 7l-1.5-1.5a2.1 2.1 0 0 0-3 0l-1 1M3 21l3-1 11-11-2-2L4 18l-1 3zM14.5 6.5l3 3"/></svg></span>
           <h3 class="i18n" data-ka="აღჭურვილობა და ინვენტარი" data-en="Equipment & inventory">აღჭურვილობა და ინვენტარი</h3>
           <p class="i18n" data-ka="მაღალი წნევის აპარატები, დოზატორები, ფენაგენერატორები და ინვენტარი." data-en="Pressure washers, dosing systems, foam generators and inventory.">მაღალი წნევის აპარატები, დოზატორები, ფენაგენერატორები და ინვენტარი.</p>
           <span class="more"><span class="i18n" data-ka="გაიგეთ მეტი" data-en="Learn more">გაიგეთ მეტი</span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
-        <a class="card interactive reveal-more reveal" href="products.html" data-delay="0.12">
+        <a class="card interactive reveal-more reveal" href="products.html?cat=cloths" data-delay="0.12">
           <span class="blob"></span>
           <span class="tile"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M8 5v14"/></svg></span>
           <h3 class="i18n" data-ka="მიკროფიბრა და აქსესუარები" data-en="Microfiber & accessories">მიკროფიბრა და აქსესუარები</h3>
@@ -369,6 +378,6 @@
 
 <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 <script src="app.js"></script>
-<script src="cart.js?v=1"></script>
+<script src="cart.js?v=2"></script>
 </body>
 </html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://*.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>გვერდი ვერ მოიძებნა | ESG - ეკოკემიკა სერვის ჯგუფი</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400..900&family=Noto+Serif+Georgian:wght@500..700&display=swap" rel="stylesheet" />
+<meta name="robots" content="noindex, follow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="/assets/esg-favicon.png" />
+<link rel="stylesheet" href="/styles.css" />
+<script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="header-row">
+      <a class="logo" href="/index.html" aria-label="ESG">
+        <img src="/assets/esg-drop.png" alt="ESG - ეკოკემიკა სერვის ჯგუფი" />
+        <span class="wm"><span class="name">ESG</span><span class="sub i18n" data-ka="ეკოკემიკა სერვის ჯგუფი" data-en="Ekokemika Service Group">ეკოკემიკა სერვის ჯგუფი</span></span>
+      </a>
+      <div class="header-actions" style="display:flex">
+        <div class="lang" role="group" aria-label="Language">
+          <button data-lang="ka" aria-pressed="true">ქარ</button>
+          <button data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="section">
+    <div class="container">
+      <div class="empty-state" style="margin:48px auto; max-width:34rem">
+        <span style="display:grid; place-items:center; width:84px; height:84px; border-radius:50%; margin:0 auto 24px; background:var(--brand-50); color:var(--brand-500)">
+          <svg class="icon" style="width:38px;height:38px" viewBox="0 0 24 24"><path d="M12 2s7 6.7 7 12a7 7 0 0 1-14 0c0-5.3 7-12 7-12z"/><path d="M9 14a3 3 0 0 0 6 0"/></svg>
+        </span>
+        <h1 style="font-size:var(--text-h2)" class="i18n" data-ka="გვერდი ვერ მოიძებნა" data-en="Page not found">გვერდი ვერ მოიძებნა</h1>
+        <p style="margin-top:14px" class="i18n" data-ka="ეს ბმული აღარ არსებობს ან შეიცვალა. სცადეთ კატალოგი — ყველა პროდუქტი იქ არის." data-en="This link no longer exists or has changed. Try the catalog — every product lives there.">ეს ბმული აღარ არსებობს ან შეიცვალა. სცადეთ კატალოგი — ყველა პროდუქტი იქ არის.</p>
+        <div style="margin-top:26px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap">
+          <a class="btn btn-lg btn-primary i18n" href="/products.html" data-ka="პროდუქციის ნახვა" data-en="Browse products">პროდუქციის ნახვა</a>
+          <a class="btn btn-lg btn-outline i18n" href="/index.html" data-ka="მთავარი გვერდი" data-en="Home page">მთავარი გვერდი</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-bottom" style="border-top:0">
+    <div class="container">
+      <span>© <span id="year"></span> ESG - Ekokemika Service Group. <span class="i18n" data-ka="ყველა უფლება დაცულია." data-en="All rights reserved.">ყველა უფლება დაცულია.</span></span>
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+<script src="/app.js"></script>
+</body>
+</html>

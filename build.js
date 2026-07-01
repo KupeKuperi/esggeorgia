@@ -18,6 +18,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
+const { execSync } = require("node:child_process");
 
 const ROOT = __dirname;
 const DIST = path.join(ROOT, "dist");
@@ -89,11 +90,14 @@ function productLD(p, prices, nameKa, desc, canonical, ogImage) {
   return '<script type="application/ld+json">' + JSON.stringify(obj) + "</script>\n";
 }
 
-/* ---------- 1. load the product data exactly like the browser does ---------- */
+/* ---------- 1. load the product data exactly like the browser does ----------
+   product.js is loaded too: it exports window.ESG_DETAIL_HTML / ESG_CRUMBS_HTML,
+   the same renderers the browser uses, so each generated page ships real,
+   crawlable markup instead of an empty shell. */
 function loadData() {
   const sandbox = { window: {}, document: { addEventListener() {} }, console };
   vm.createContext(sandbox);
-  for (const file of ["catalog-data.js", "equipment-data.js", "towels-data.js", "prices-data.js"]) {
+  for (const file of ["catalog-data.js", "equipment-data.js", "towels-data.js", "prices-data.js", "product.js"]) {
     const full = path.join(ROOT, file);
     if (!fs.existsSync(full)) continue;
     vm.runInContext(fs.readFileSync(full, "utf8"), sandbox, { filename: file });
@@ -101,7 +105,20 @@ function loadData() {
   const products = sandbox.window.ESG_PRODUCTS || [];
   const categories = sandbox.window.ESG_CATEGORIES || [];
   const prices = sandbox.window.ESG_PRICES || {};
-  return { products, categories, prices };
+  const detailHTML = sandbox.window.ESG_DETAIL_HTML || null;
+  const crumbsHTML = sandbox.window.ESG_CRUMBS_HTML || null;
+  return { products, categories, prices, detailHTML, crumbsHTML };
+}
+
+/* last real change date of a file, from git history (mtimes are meaningless on
+   CI checkouts); falls back to today */
+function gitDate(file) {
+  try {
+    const out = execSync(`git log -1 --format=%cI -- "${file}"`, { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] })
+      .toString().trim();
+    if (out) return out.slice(0, 10);
+  } catch (e) { /* no git — fall through */ }
+  return TODAY;
 }
 
 /* ---------- 2. copy the whole site into dist/ ---------- */
@@ -116,8 +133,22 @@ function copySite() {
   }
 }
 
+/* Breadcrumb rich-result markup (mirrors the visible crumbs) */
+function breadcrumbLD(nameKa, canonical) {
+  const obj = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "მთავარი", "item": SITE + "/" },
+      { "@type": "ListItem", "position": 2, "name": "პროდუქცია", "item": SITE + "/products.html" },
+      { "@type": "ListItem", "position": 3, "name": nameKa, "item": canonical }
+    ]
+  };
+  return '<script type="application/ld+json">' + JSON.stringify(obj) + "</script>\n";
+}
+
 /* ---------- 3. build one real page per product ---------- */
-function buildProductPages(products, prices) {
+function buildProductPages(products, prices, detailHTML, crumbsHTML) {
   const template = fs.readFileSync(path.join(ROOT, "product.html"), "utf8");
   let count = 0;
 
@@ -177,6 +208,22 @@ function buildProductPages(products, prices) {
     /* product rich-result markup (image + price) for priced products */
     const ld = productLD(p, prices, nameKa, desc, canonical, ogImage);
     if (ld) html = html.replace("</head>", ld + "</head>");
+    html = html.replace("</head>", breadcrumbLD(nameKa, canonical) + "</head>");
+
+    /* bake the real detail markup (Georgian default) so crawlers and the
+       first paint get content without waiting for JS; product.js hydrates */
+    if (detailHTML) {
+      html = html.replace(
+        '<div id="product-detail" class="pdetail"></div>',
+        '<div id="product-detail" class="pdetail">' + detailHTML(p, "ka", `/products/${slug}/`) + "</div>"
+      );
+    }
+    if (crumbsHTML) {
+      html = html.replace(
+        '<nav id="crumbs" class="crumbs" aria-label="Breadcrumb"></nav>',
+        '<nav id="crumbs" class="crumbs" aria-label="Breadcrumb">' + crumbsHTML(p, "ka") + "</nav>"
+      );
+    }
 
     const dir = path.join(DIST, "products", slug);
     fs.mkdirSync(dir, { recursive: true });
@@ -188,21 +235,25 @@ function buildProductPages(products, prices) {
 
 /* ---------- 4. rebuild sitemap.xml ---------- */
 function buildSitemap(products) {
+  /* honest lastmod: base pages use their own git history; product pages use
+     the newest data file (stamping everything "today" teaches Google nothing) */
+  const dataDate = ["catalog-data.js", "equipment-data.js", "towels-data.js", "prices-data.js"]
+    .map(gitDate).sort().pop();
   const base = [
-    { loc: `${SITE}/`, freq: "weekly", pri: "1.0" },
-    { loc: `${SITE}/products.html`, freq: "weekly", pri: "0.9" },
-    { loc: `${SITE}/services.html`, freq: "monthly", pri: "0.9" },
-    { loc: `${SITE}/about.html`, freq: "monthly", pri: "0.7" },
-    { loc: `${SITE}/contact.html`, freq: "monthly", pri: "0.8" },
+    { loc: `${SITE}/`, freq: "weekly", pri: "1.0", mod: gitDate("index.html") },
+    { loc: `${SITE}/products.html`, freq: "weekly", pri: "0.9", mod: dataDate },
+    { loc: `${SITE}/services.html`, freq: "monthly", pri: "0.9", mod: gitDate("services.html") },
+    { loc: `${SITE}/about.html`, freq: "monthly", pri: "0.7", mod: gitDate("about.html") },
+    { loc: `${SITE}/contact.html`, freq: "monthly", pri: "0.8", mod: gitDate("contact.html") },
   ];
   const productUrls = products
     .filter((p) => p && p.slug)
-    .map((p) => ({ loc: `${SITE}/products/${p.slug}/`, freq: "monthly", pri: "0.7" }));
+    .map((p) => ({ loc: `${SITE}/products/${p.slug}/`, freq: "monthly", pri: "0.7", mod: dataDate }));
 
   const urls = base.concat(productUrls)
     .map(
       (u) =>
-        `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${TODAY}</lastmod>\n` +
+        `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${u.mod}</lastmod>\n` +
         `    <changefreq>${u.freq}</changefreq>\n    <priority>${u.pri}</priority>\n  </url>`
     )
     .join("\n");
@@ -215,9 +266,9 @@ function buildSitemap(products) {
 
 /* ---------- run ---------- */
 function main() {
-  const { products, categories, prices } = loadData();
+  const { products, categories, prices, detailHTML, crumbsHTML } = loadData();
   copySite();
-  const pages = buildProductPages(products, prices);
+  const pages = buildProductPages(products, prices, detailHTML, crumbsHTML);
   buildSitemap(products);
   console.log(
     `ESG build OK → dist/\n` +

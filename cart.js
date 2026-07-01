@@ -196,6 +196,11 @@
       b.setAttribute("data-count", String(n));
       b.textContent = String(n);
     });
+    /* announce the count through the button label (badge itself is visual) */
+    document.querySelectorAll(".cart-btn").forEach(function (btn) {
+      var base = lang() === "en" ? "Cart" : "კალათა";
+      btn.setAttribute("aria-label", n > 0 ? base + " (" + n + ")" : base);
+    });
   }
   function drawerRow(it) {
     var li = document.createElement("li");
@@ -204,9 +209,9 @@
       '<img class="ci-thumb" alt="" loading="lazy" />' +
       '<div class="ci-main"><div class="ci-name"></div><div class="ci-size"></div>' +
         '<div class="ci-qty qty" role="group" aria-label="' + t("რაოდენობა", "Quantity") + '">' +
-          '<button class="qty-btn" type="button" data-qty-dec aria-label="−"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>' +
+          '<button class="qty-btn" type="button" data-qty-dec aria-label="' + t("რაოდენობის შემცირება", "Decrease quantity") + '"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>' +
           '<input class="qty-input" data-qty-input type="text" inputmode="numeric" aria-label="' + t("რაოდენობა", "Quantity") + '" />' +
-          '<button class="qty-btn" type="button" data-qty-inc aria-label="+"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>' +
+          '<button class="qty-btn" type="button" data-qty-inc aria-label="' + t("რაოდენობის გაზრდა", "Increase quantity") + '"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>' +
         '</div></div>' +
       '<div class="ci-right">' +
         '<button class="ci-remove" type="button" data-remove aria-label="' + t("წაშლა", "Remove") + '"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
@@ -240,6 +245,14 @@
      =================================================================== */
   function renderCheckout() {
     var form = document.getElementById("order-form"); if (!form) return;
+    /* empty cart → show the empty state instead of a blank summary */
+    var emptyEl = document.getElementById("checkout-empty");
+    var grid = document.querySelector(".checkout-grid");
+    var success = document.getElementById("order-success");
+    var isEmpty = items.length === 0 && !(success && success.classList.contains("is-shown"));
+    if (emptyEl) emptyEl.classList.toggle("is-shown", isEmpty);
+    if (grid) grid.style.display = isEmpty || (success && success.classList.contains("is-shown")) ? "none" : "";
+    if (isEmpty) return;
     var list = document.getElementById("order-items");
     if (list) {
       list.innerHTML = "";
@@ -264,9 +277,18 @@
       var qs = qrow.querySelector(".v"); if (qs) qs.textContent = t(qc + " პოზიცია", qc + " item(s)"); }
   }
 
+  /* order reference: date + random suffix, shared between the message and the
+     success screen so the customer and the team talk about the same number */
+  var orderRef = null;
+  function makeRef() {
+    var d = new Date(), pad = function (n) { return (n < 10 ? "0" : "") + n; };
+    return "ESG-" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) +
+           "-" + String(Math.floor(1000 + Math.random() * 9000));
+  }
+
   function orderText() {
     var lines = [];
-    lines.push(t("ESG — ახალი შეკვეთა", "ESG — new order"));
+    lines.push(t("ESG — ახალი შეკვეთა", "ESG — new order") + " · #" + orderRef);
     lines.push("—————");
     items.forEach(function (it, i) {
       var row = (i + 1) + ") " + nameOf(it) + " — " + sizeOf(it) + " × " + it.qty;
@@ -292,18 +314,65 @@
     return { name: v("of-name"), phone: v("of-phone"), email: v("of-email"),
              address: v("of-address"), notes: v("of-notes") };
   }
-  function validate(f) {
-    if (!items.length) { alert(t("კალათა ცარიელია.", "Your cart is empty.")); return false; }
-    if (!f.name || !f.phone || !f.address) {
-      alert(t("გთხოვთ შეავსოთ სახელი, ტელეფონი და მისამართი.", "Please fill in name, phone and address."));
-      return false;
+  /* inline validation — marks the missing fields and shows one message
+     (replaces the old alert() dialogs) */
+  function fieldError(msgText) {
+    var form = document.getElementById("order-form");
+    var note = document.getElementById("order-errors");
+    if (!note) {
+      note = document.createElement("p");
+      note.id = "order-errors"; note.className = "sent-note err";
+      note.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span class="msg"></span>';
+      form.insertBefore(note, form.querySelector(".co-actions"));
     }
-    return true;
+    note.hidden = false;
+    note.querySelector(".msg").textContent = msgText;
   }
-  function showSuccess() {
+  function validate(f) {
+    var form = document.getElementById("order-form");
+    Array.prototype.forEach.call(form.querySelectorAll(".field.err"), function (el) {
+      el.classList.remove("err"); el.removeAttribute("aria-invalid");
+    });
+    var note = document.getElementById("order-errors"); if (note) note.hidden = true;
+    if (!items.length) return false;               // the empty state already covers this
+    var missing = [];
+    [["of-name", f.name], ["of-phone", f.phone], ["of-address", f.address]].forEach(function (d) {
+      if (!d[1]) {
+        var el = document.getElementById(d[0]);
+        if (el) { el.classList.add("err"); el.setAttribute("aria-invalid", "true"); missing.push(el); }
+      }
+    });
+    if (!missing.length) return true;
+    fieldError(t("გთხოვთ შეავსოთ სახელი, ტელეფონი და მისამართი.", "Please fill in your name, phone and address."));
+    missing[0].focus();
+    return false;
+  }
+  /* set a bilingual string so it survives later language switches */
+  function setBiText(el, ka, en) {
+    if (!el) return;
+    el.setAttribute("data-ka", ka); el.setAttribute("data-en", en);
+    el.textContent = lang() === "en" ? en : ka;
+  }
+  function showSuccess(mode) {
     var s = document.getElementById("order-success"), g = document.querySelector(".checkout-grid");
-    if (s) s.classList.add("is-shown");
+    var e = document.getElementById("checkout-empty");
+    if (s) {
+      var ref = s.querySelector(".order-ref");
+      if (ref && orderRef) { ref.textContent = "#" + orderRef; ref.hidden = false; }
+      if (mode === "wa") {
+        /* WhatsApp opens in a new tab — we can't know the message was actually
+           sent, so the cart stays saved and the copy says so honestly */
+        setBiText(document.getElementById("os-title"),
+          "შეკვეთა მზადაა — დააჭირეთ გაგზავნას WhatsApp-ში",
+          "Order ready — press Send in WhatsApp");
+        setBiText(document.getElementById("os-text"),
+          "WhatsApp გაიხსნა თქვენი შეკვეთით. კალათა შენახული რჩება, სანამ შეტყობინებას გააგზავნით — დადასტურების შემდეგ მალე დაგიკავშირდებით.",
+          "WhatsApp opened with your order. Your cart stays saved until you press Send — after that our team will contact you shortly.");
+      }
+      s.classList.add("is-shown");
+    }
     if (g) g.style.display = "none";
+    if (e) e.classList.remove("is-shown");
     window.scrollTo({ top: 0, behavior: "auto" });
   }
 
@@ -311,31 +380,39 @@
     var form = document.getElementById("order-form"); if (!form) return;
     var wa = document.getElementById("order-whatsapp");
     var em = document.getElementById("order-email");
+    /* typing into a flagged field clears its error immediately */
+    form.addEventListener("input", function (e) {
+      var el = e.target.closest(".field.err");
+      if (el) { el.classList.remove("err"); el.removeAttribute("aria-invalid"); }
+    });
     if (wa) wa.addEventListener("click", function () {
       var f = readForm(); if (!validate(f)) return;
+      orderRef = orderRef || makeRef();
       var msg = orderText() + "\n—————\n" + customerText(f);
       window.open("https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
-      clear(); showSuccess();
+      showSuccess("wa");   // cart intentionally NOT cleared — see showSuccess()
     });
     if (em) em.addEventListener("click", function () {
       var f = readForm(); if (!validate(f)) return;
+      orderRef = orderRef || makeRef();
       em.disabled = true; var label = em.textContent; em.textContent = t("იგზავნება…", "Sending…");
       fetch(FORM_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({
-          _subject: t("ახალი შეკვეთა — ვებსაიტი", "New order — website"),
+          _subject: t("ახალი შეკვეთა — ვებსაიტი", "New order — website") + " · #" + orderRef,
           _captcha: "false", _template: "table",
           name: f.name, phone: f.phone, email: f.email, address: f.address,
           notes: f.notes, order: orderText()
         })
       }).then(function (r) { return r.json().catch(function () { return {}; }); })
         .then(function (d) {
-          if (d && (d.success === true || d.success === "true")) { clear(); showSuccess(); }
-          else { alert(t("ვერ გაიგზავნა. სცადეთ WhatsApp ან დაგვირეკეთ: 551 51 91 65",
-                         "Couldn't send. Try WhatsApp or call us: 551 51 91 65")); }
+          if (d && (d.success === true || d.success === "true")) { clear(); showSuccess("email"); }
+          else { fieldError(t("ვერ გაიგზავნა. სცადეთ WhatsApp ან დაგვირეკეთ: 551 51 91 65",
+                              "Couldn't send. Try WhatsApp or call us: 551 51 91 65")); }
         })
-        .catch(function () { alert(t("ვერ გაიგზავნა. სცადეთ WhatsApp.", "Couldn't send. Try WhatsApp.")); })
+        .catch(function () { fieldError(t("ვერ გაიგზავნა. სცადეთ WhatsApp ან დაგვირეკეთ: 551 51 91 65",
+                                          "Couldn't send. Try WhatsApp or call us: 551 51 91 65")); })
         .then(function () { em.disabled = false; em.textContent = label; });
     });
   }

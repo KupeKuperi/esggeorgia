@@ -11,6 +11,14 @@
           equipment: "Equipment", cloths: "Cloths", household: "Household", code: "Code", liter: "L", showing: "Showing", sizes: "Sizes" }
   };
 
+  /* escape authored strings before they hit innerHTML/attributes */
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  window.ESG_ESC = esc;
+
   /* badge label shown on each card / stage, keyed by category id */
   function catLabelFor(cat, t) {
     if (cat === "shampoo") return t.shampoo;
@@ -73,20 +81,20 @@
     var t = T[lang];
     var subLabel = subNameFor(p, lang) || catLabelFor(p.cat, t);
     var href = "product.html?slug=" + encodeURIComponent(p.slug);
-    var name = p.name[lang];
+    var name = esc(p.name[lang]);
     return (
       '<article class="pc ' + p.cat + '" data-cat="' + p.cat + '" data-sub="' + (p.sub || "") + '">' +
         '<a class="pc-link" href="' + href + '" aria-label="' + name + '"></a>' +
         '<div class="bar"></div>' +
         '<div class="stage eq">' +
-          '<span class="cat"><span class="d"></span>' + subLabel + "</span>" +
+          '<span class="cat"><span class="d"></span>' + esc(subLabel) + "</span>" +
           '<div class="shots"><img class="shot on" src="' + p.img + '" alt="' + name + '" loading="lazy" /></div>' +
         "</div>" +
         '<div class="body">' +
           "<h3>" + name + "</h3>" +
-          (p.blurb ? '<p class="blurb">' + p.blurb[lang] + "</p>" : "") +
-          (p.spec ? '<span class="chip eq-spec">' + svgSpec() + p.spec[lang] + "</span>" : "") +
-          (p.code ? '<div class="eq-code">' + t.code + ' · <span class="cd">#' + p.code + "</span></div>" : "") +
+          (p.blurb ? '<p class="blurb">' + esc(p.blurb[lang]) + "</p>" : "") +
+          (p.spec ? '<span class="chip eq-spec">' + svgSpec() + esc(p.spec[lang]) + "</span>" : "") +
+          (p.code ? '<div class="eq-code">' + t.code + ' · <span class="cd">#' + esc(p.code) + "</span></div>" : "") +
           cardPriceHTML(p, lang) +
           '<div class="quote"><a class="pc-cta" href="' + href + '">' + t.details + svgArrow() + "</a></div>" +
         "</div>" +
@@ -111,9 +119,10 @@
     var multi = ordered.length > 1;
 
     /* one layered photo per size; on hover the card cross-fades through them */
+    var name = esc(p.name[lang]);
     var shots = ordered.map(function (s, i) {
       return '<img class="shot' + (i === 0 ? " on" : "") + '" data-l="' + s.l + '" src="' +
-        s.img + '" alt="' + p.name[lang] + " · " + fmtL(s.l, lang) + " " + t.liter +
+        s.img + '" alt="' + name + " · " + fmtL(s.l, lang) + " " + t.liter +
         '" loading="lazy" />';
     }).join("");
 
@@ -137,7 +146,7 @@
 
     return (
       '<article class="pc ' + p.cat + '" data-cat="' + p.cat + '">' +
-        '<a class="pc-link" href="' + href + '" aria-label="' + p.name[lang] + '"></a>' +
+        '<a class="pc-link" href="' + href + '" aria-label="' + name + '"></a>' +
         '<div class="bar"></div>' +
         '<div class="stage"' + stageAttr + stageStyle + (multi ? " data-cycle" : "") + '>' +
           '<span class="cat"><span class="d"></span>' + catLabel + "</span>" +
@@ -145,9 +154,9 @@
           dots +
         "</div>" +
         '<div class="body">' +
-          "<h3>" + p.name[lang] + "</h3>" +
-          '<p class="blurb">' + p.blurb[lang] + "</p>" +
-          '<span class="chip">' + svgDrop() + p.dilution[lang] + "</span>" +
+          "<h3>" + name + "</h3>" +
+          '<p class="blurb">' + esc(p.blurb[lang]) + "</p>" +
+          '<span class="chip">' + svgDrop() + esc(p.dilution[lang]) + "</span>" +
           sizeChips +
           cardPriceHTML(p, lang) +
           '<div class="quote"><a class="pc-cta" href="' + href + '">' + t.details + svgArrow() + "</a></div>" +
@@ -214,9 +223,22 @@
     var emptyEl = document.getElementById("product-empty");
     var cats = window.ESG_CATEGORIES;
     var products = window.ESG_PRODUCTS;
-    var current = "all";
-    var currentSub = "all";
-    var query = "";
+    /* filter + search state lives in the URL, so the back button and shared
+       links keep their context (products.html?cat=equipment&q=...) */
+    var params = new URLSearchParams(window.location.search);
+    var wantCat = params.get("cat") || "all";
+    var current = (wantCat === "all" || cats.some(function (c) { return c.id === wantCat; })) ? wantCat : "all";
+    var currentSub = params.get("sub") || "all";
+    var query = (params.get("q") || "").toLowerCase();
+
+    function syncURL() {
+      var sp = new URLSearchParams();
+      if (current !== "all") sp.set("cat", current);
+      if (currentSub !== "all") sp.set("sub", currentSub);
+      if (query) sp.set("q", query);
+      var qs = sp.toString();
+      history.replaceState(null, "", window.location.pathname + (qs ? "?" + qs : ""));
+    }
 
     function lang() { return (window.ESG && window.ESG.lang && window.ESG.lang()) || "ka"; }
     function activeCat() {
@@ -243,9 +265,9 @@
     }
     var tabDefs = [{ id: "all" }].concat(cats.map(function (c) { return { id: c.id, cat: c }; }));
     filterHost.innerHTML =
-      tabDefs.map(function (d, i) {
+      tabDefs.map(function (d) {
         var ic = FILTER_ICONS[d.id] || FILTER_ICONS.all;
-        return '<button class="tab" type="button" role="tab" data-id="' + d.id + '" aria-selected="' + (i === 0) + '">' +
+        return '<button class="tab" type="button" data-id="' + d.id + '" aria-pressed="' + (d.id === current) + '">' +
           '<span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24">' + ic + '</svg></span>' +
           '<span class="cl"></span>' +
           '<span class="cn">' + catCount(d.id) + '</span>' +
@@ -301,10 +323,8 @@
       });
     }
 
-    function positionPill() { /* chip filter: active state is handled by [aria-selected]; no sliding pill */ }
     function select(btn) {
-      buttons.forEach(function (b) { b.setAttribute("aria-selected", String(b === btn)); });
-      positionPill();
+      buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
       current = btn.dataset.id;
       currentSub = "all";
       buildSubs();
@@ -333,17 +353,22 @@
       bindCycles(grid);
       if (countEl) countEl.textContent = T[l].showing + " · " + list.length;
       if (emptyEl) emptyEl.hidden = list.length !== 0;
+      syncURL();
     }
 
-    /* ---- search ---- */
+    /* ---- search (debounced — 147 cards re-render per change) ---- */
+    var searchTimer = null;
     if (searchEl) {
+      if (query) searchEl.value = query;
       searchEl.addEventListener("input", function () {
         query = searchEl.value.trim().toLowerCase();
         if (clearEl) clearEl.hidden = query === "";
-        render();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(render, 120);
       });
     }
     if (clearEl) {
+      clearEl.hidden = query === "";
       clearEl.addEventListener("click", function () {
         query = "";
         if (searchEl) { searchEl.value = ""; searchEl.focus(); }
@@ -356,18 +381,11 @@
     relabel();
     buildSubs();
     render();
-    positionPill(true);
-    requestAnimationFrame(function () { positionPill(true); });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { positionPill(true); });
-    window.addEventListener("load", function () { positionPill(true); });
-    window.addEventListener("resize", function () { positionPill(true); });
 
-    /* language change: relabel + re-render + reposition (no rebuild) */
+    /* language change: relabel + re-render (no rebuild) */
     document.addEventListener("esg:lang", function () {
       relabel();
       render();
-      positionPill(true);
-      requestAnimationFrame(function () { positionPill(true); });
     });
   }
 

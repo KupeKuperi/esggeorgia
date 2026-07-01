@@ -53,6 +53,26 @@
   /* litre formatting: Georgian comma decimal (0,5), English dot (0.5) */
   function fmtL(l, lang) { var s = String(l); return lang === "ka" ? s.replace(".", ",") : s; }
 
+  /* escape authored strings before they hit innerHTML/attributes */
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  /* bespoke Made-in-Georgia stamp — shown on ESG-produced lines only.
+     refBase: the generated /products/<slug>/ pages carry <base href="/">,
+     which breaks bare SVG fragment refs — prefix the ref with the page path. */
+  function roundelHTML(refBase) {
+    var ref = (refBase || "") + "#mig-circle-pd";
+    return '<span class="mig-roundel" aria-hidden="true"><svg viewBox="0 0 100 100">' +
+      '<defs><path id="mig-circle-pd" d="M50 50 m-37 0 a37 37 0 1 1 74 0 a37 37 0 1 1 -74 0"/></defs>' +
+      '<circle class="disc" cx="50" cy="50" r="49"/>' +
+      '<g class="ring"><text><textPath href="' + ref + '">ქართული წარმოება · MADE IN GEORGIA ·</textPath></text></g>' +
+      '<path class="drop" d="M50 34 s12.8 12.3 12.8 22 a12.8 12.8 0 0 1 -25.6 0 c0 -9.7 12.8 -22 12.8 -22 z"/>' +
+      '</svg></span>';
+  }
+
   /* remembered selection per slug (litres) so it survives language re-render */
   var SEL = {};
 
@@ -153,19 +173,16 @@
   }
 
   function renderCrumbs(p, l) {
-    var t = T[l], host = document.getElementById("crumbs");
-    if (!host) return;
-    host.innerHTML =
-      '<a href="index.html">' + t.home + "</a>" +
-      svg("arrow", 14).replace("icon", "icon sep") +
-      '<a href="products.html">' + t.products + "</a>" +
-      (p ? svg("arrow", 14).replace("icon", "icon sep") + '<span class="here">' + p.name[l] + "</span>" : "");
+    var host = document.getElementById("crumbs");
+    if (host) host.innerHTML = window.ESG_CRUMBS_HTML(p, l);
   }
 
-  function renderDetail(p, l) {
+  /* pure HTML builder — also runs inside build.js (Node vm) to bake real,
+     crawlable product pages; keep it free of DOM access */
+  function detailHTML(p, l, refBase) {
     var t = T[l];
-    var host = document.getElementById("product-detail");
     var catLabel = catLabelFor(p.cat, t);
+    var name = esc(p.name[l]);
     var isReady = /მზა|ready/i.test(p.dilution.ka + " " + p.dilution.en);
     var format = isReady ? t.ready : t.concentrate;
     var sizes = sortedSizes(p);
@@ -175,7 +192,7 @@
     var sizeBtns = sizes.map(function (s) {
       var on = s.l === sel.l;
       return '<button type="button" class="szbtn' + (on ? " on" : "") + '" data-l="' + s.l +
-        '" data-img="' + s.img + '" data-code="' + s.code + '" aria-pressed="' + on + '">' +
+        '" data-img="' + s.img + '" data-code="' + esc(s.code) + '" aria-pressed="' + on + '">' +
         fmtL(s.l, l) + " " + t.liter + "</button>";
     }).join("");
 
@@ -183,13 +200,13 @@
     var rows = sizes.map(function (s) {
       var on = s.l === sel.l;
       return '<li class="spec-row' + (on ? " on" : "") + '" data-l="' + s.l + '">' +
-        '<span class="sz">' + fmtL(s.l, l) + " " + t.liter + '</span><span class="cd">' + (s.code ? "#" + s.code : "-") + "</span></li>";
+        '<span class="sz">' + fmtL(s.l, l) + " " + t.liter + '</span><span class="cd">' + (s.code ? "#" + esc(s.code) : "-") + "</span></li>";
     }).join("");
 
     var factDefs = [
       { i: "tag", k: t.category, v: catLabel },
       { i: "beaker", k: t.format, v: format },
-      { i: "drop", k: t.dilution, v: p.dilution[l] }
+      { i: "drop", k: t.dilution, v: esc(p.dilution[l]) }
     ];
     if (!p.noEco) factDefs.push({ i: "leaf", k: t.eco, v: t.biod });
     var facts = factDefs.map(function (f) {
@@ -199,23 +216,23 @@
 
     var usageBlock = p.usage ? (
       '<div class="pd-block"><p class="lbl">' + t.usage + '</p>' +
-      '<p class="pd-usage">' + svg("spray", 18) + "<span>" + p.usage[l] + "</span></p></div>"
+      '<p class="pd-usage">' + svg("spray", 18) + "<span>" + esc(p.usage[l]) + "</span></p></div>"
     ) : "";
 
     /* main photo: show the group/hero shot until the visitor picks a size */
     var heroShown = (SEL[p.slug] == null && p.hero);
     var mainImg = heroShown ? p.hero : sel.img;
-    var mainAlt = heroShown ? p.name[l] : (p.name[l] + " · " + fmtL(sel.l, l) + " " + t.liter);
+    var mainAlt = heroShown ? name : (name + " · " + fmtL(sel.l, l) + " " + t.liter);
 
-    host.innerHTML =
+    return (
       '<div class="pd-info">' +
         '<span class="eyebrow">' + catLabel + "</span>" +
-        "<h1>" + p.name[l] + "</h1>" +
-        '<p class="lede">' + p.blurb[l] + "</p>" +
-        '<span class="chip">' + svg("drop", 15) + p.dilution[l] + "</span>" +
+        "<h1>" + name + "</h1>" +
+        '<p class="lede">' + esc(p.blurb[l]) + "</p>" +
+        '<span class="chip">' + svg("drop", 15) + esc(p.dilution[l]) + "</span>" +
         '<div class="pd-block"><p class="lbl">' + t.size + '</p>' +
           '<div class="pd-sizes" role="group" aria-label="' + t.size + '">' + sizeBtns + "</div>" +
-          '<p class="pd-codeline">' + t.code + ' · <span class="cd" id="sel-code">' + (sel.code ? "#" + sel.code : "-") + "</span></p>" +
+          '<p class="pd-codeline">' + t.code + ' · <span class="cd" id="sel-code">' + (sel.code ? "#" + esc(sel.code) : "-") + "</span></p>" +
           '<p class="pd-priceline">' + (l === "en" ? "Price" : "ფასი") + ' · <span class="pv" id="sel-price">' + priceText(sel.code, l) + "</span></p>" +
           acBlock(l) +
         "</div>" +
@@ -231,11 +248,24 @@
         '<div class="pd-stage ' + p.cat + '">' +
           '<span class="topbar"></span>' +
           '<span class="cat"><span class="d"></span>' + catLabel + "</span>" +
+          roundelHTML(refBase) +
           '<img id="pd-photo" src="' + mainImg + '" alt="' + mainAlt + '" />' +
         "</div>" +
-      "</div>";
+      "</div>"
+    );
+  }
 
-    document.title = "ESG - " + p.name[l];
+  /* the baked <title> (KA) is richer than what we can set here — only override
+     it for the EN view or for the ?slug= fallback page */
+  function setTitle(p, l, catLabel) {
+    var baked = window.__ESG_SLUG === p.slug;
+    if (!baked || l !== "ka") document.title = p.name[l] + " — " + catLabel + " | ESG";
+  }
+
+  function renderDetail(p, l) {
+    var host = document.getElementById("product-detail");
+    host.innerHTML = detailHTML(p, l, window.location.pathname + window.location.search);
+    setTitle(p, l, catLabelFor(p.cat, T[l]));
     bindSizes(p, l);
   }
 
@@ -325,27 +355,27 @@
   }
 
   /* ---- equipment detail (hardware: no dilution / sizes / eco) ---- */
-  function renderEquipmentDetail(p, l) {
+  function equipmentHTML(p, l) {
     var t = T[l];
-    var host = document.getElementById("product-detail");
-    var subLabel = subNameFor(p, l) || catLabelFor(p.cat, t);
+    var subLabel = esc(subNameFor(p, l) || catLabelFor(p.cat, t));
+    var name = esc(p.name[l]);
 
     var facts = [
       { i: "tag", k: t.category, v: subLabel },
-      { i: "cog", k: t.spec, v: (p.spec ? p.spec[l] : "-") },
-      { i: "hash", k: t.code, v: (p.code ? "#" + p.code : "-") },
+      { i: "cog", k: t.spec, v: (p.spec ? esc(p.spec[l]) : "-") },
+      { i: "hash", k: t.code, v: (p.code ? "#" + esc(p.code) : "-") },
       { i: "tag", k: (l === "en" ? "Price" : "ფასი"), v: priceText(p.code, l) }
     ].map(function (f) {
       return '<li><span class="fi">' + svg(f.i) + '</span><span class="ft"><span class="k">' +
         f.k + '</span><span class="v">' + f.v + "</span></span></li>";
     }).join("");
 
-    host.innerHTML =
+    return (
       '<div class="pd-info">' +
         '<span class="eyebrow">' + subLabel + "</span>" +
-        "<h1>" + p.name[l] + "</h1>" +
-        (p.blurb ? '<p class="lede">' + p.blurb[l] + "</p>" : "") +
-        (p.spec ? '<span class="chip">' + svg("cog", 15) + p.spec[l] + "</span>" : "") +
+        "<h1>" + name + "</h1>" +
+        (p.blurb ? '<p class="lede">' + esc(p.blurb[l]) + "</p>" : "") +
+        (p.spec ? '<span class="chip">' + svg("cog", 15) + esc(p.spec[l]) + "</span>" : "") +
         '<div class="pd-block"><p class="lbl">' + t.facts + '</p><ul class="pd-facts">' + facts + "</ul></div>" +
         acBlock(l) +
         '<div class="pd-actions">' +
@@ -357,13 +387,30 @@
         '<div class="pd-stage ' + p.cat + '">' +
           '<span class="topbar"></span>' +
           '<span class="cat"><span class="d"></span>' + subLabel + "</span>" +
-          '<img id="pd-photo" src="' + p.img + '" alt="' + p.name[l] + '" />' +
+          '<img id="pd-photo" src="' + p.img + '" alt="' + name + '" />' +
         "</div>" +
-      "</div>";
+      "</div>"
+    );
+  }
 
-    document.title = "ESG - " + p.name[l];
+  function renderEquipmentDetail(p, l) {
+    var host = document.getElementById("product-detail");
+    host.innerHTML = equipmentHTML(p, l);
+    setTitle(p, l, subNameFor(p, l) || catLabelFor(p.cat, T[l]));
     wireAdd(p, l, function () { return { l: null, code: p.code, img: p.img }; });
   }
+
+  /* exported for build.js — bakes crawlable markup into /products/<slug>/ */
+  window.ESG_DETAIL_HTML = function (p, l, refBase) {
+    return (p.cat === "equipment" || p.cat === "cloths") ? equipmentHTML(p, l) : detailHTML(p, l, refBase);
+  };
+  window.ESG_CRUMBS_HTML = function (p, l) {
+    var t = T[l];
+    return '<a href="index.html">' + t.home + "</a>" +
+      svg("arrow", 14).replace("icon", "icon sep") +
+      '<a href="products.html">' + t.products + "</a>" +
+      (p ? svg("arrow", 14).replace("icon", "icon sep") + '<span class="here">' + esc(p.name[l]) + "</span>" : "");
+  };
 
   function renderAll() {
     var l = lang();

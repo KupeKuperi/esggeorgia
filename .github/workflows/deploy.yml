@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: Get the code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so sitemap lastmod dates are real
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
