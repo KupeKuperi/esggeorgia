@@ -29,7 +29,7 @@ const TODAY = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 const EXCLUDE_TOP = new Set([
   "dist", ".git", ".github", "node_modules",
   "build.js", "optimize-images.py", "tweaks-app.js", "tweaks-panel.jsx",
-  "README.md", "ADD-A-PRODUCT.md", ".gitignore",
+  "README.md", "ADD-A-PRODUCT.md", "DESIGN-BRIEF.md", ".gitignore",
 ]);
 
 /* Georgian category label shown in the page <title> */
