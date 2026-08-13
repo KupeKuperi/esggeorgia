@@ -3,7 +3,7 @@
 
    Owns: localStorage cart state, the header cart icon + count badge, the
    slide-out drawer (injected once into <body>), and the checkout page wiring
-   (order summary + WhatsApp / email submit). No framework, no external libs.
+   (order summary + order submit). No framework, no external libs.
 
    Public API (used by product.js to add items):
      window.ESG_CART.add({ slug, name:{ka,en}, l, code, price, img })
@@ -11,15 +11,64 @@
 
    Notes:
    - Item names are rendered with textContent (never innerHTML) — XSS-safe.
-   - WhatsApp uses wa.me (navigation, no CSP impact); email uses FormSubmit
-     (needs `connect-src https://formsubmit.co` on checkout.html).
+   - WhatsApp uses wa.me (navigation, no CSP impact). Placing an order posts
+     to the order service, which needs that service's address in the
+     `connect-src` list on checkout.html or the browser blocks the request.
+   - Prices never leave the browser. Only codes and quantities are sent, and
+     the server prices the order itself.
    ========================================================================= */
 (function () {
   "use strict";
 
   var KEY = "esg_cart_v1";
   var WA_NUMBER = "995551519165";                                   // WhatsApp (no +)
-  var FORM_ENDPOINT = "https://formsubmit.co/ajax/ekokemikaservicegroup@gmail.com";
+
+  /* ------------------------------------------------------------------
+     Order service.
+
+     The checkout sends the cart here. It sends only product codes and
+     quantities: no prices. The service looks every price up itself, adds the
+     total up on the server and saves the order, so nothing a visitor can edit
+     in their browser can change what they are charged.
+
+     ORDER_API_PUBLIC is empty on purpose. Fill it in with the https address of
+     the order service before merging this to the live site, and add the same
+     address to the connect-src list in checkout.html, otherwise the browser
+     blocks the request. While it is empty the live site cannot place orders,
+     which is why this branch should not be merged until the address exists.
+
+     On your own PC the service is reached directly on port 3000, so testing
+     with Live Server works with no configuration.
+     ------------------------------------------------------------------ */
+  var ORDER_API_PUBLIC = "";
+  var ORDER_API_LOCAL  = "http://localhost:3000";
+
+  function apiBase() {
+    var h = location.hostname;
+    return (h === "localhost" || h === "127.0.0.1") ? ORDER_API_LOCAL : ORDER_API_PUBLIC;
+  }
+
+  /* The service answers failures with a short fixed word, never with wording
+     for the customer, so that all customer-facing text lives here with every
+     other translation. Anything not listed falls back to GENERIC. */
+  var API_MESSAGES = {
+    invalid_request: ["შეამოწმეთ შევსებული მონაცემები და სცადეთ ხელახლა.",
+                      "Please check the details you entered and try again."],
+    unknown_product: ["კალათაში არსებული ერთი პროდუქტი აღარ არის ხელმისაწვდომი. გთხოვთ წაშალოთ და სცადოთ ხელახლა.",
+                      "One of the items in your cart is no longer available. Please remove it and try again."],
+    unsupported_product: ["ამ პროდუქტის ონლაინ შეკვეთა ვერ ხერხდება. დაგვიკავშირდით WhatsApp-ით.",
+                          "This item cannot be ordered online. Please contact us on WhatsApp."],
+    rate_limited: ["ძალიან ბევრი მცდელობა. გთხოვთ დაელოდოთ ერთ წუთს და სცადოთ ხელახლა.",
+                   "Too many attempts. Please wait a minute and try again."],
+    OFFLINE: ["შეკვეთის გაგზავნა ვერ მოხერხდა — სერვისი დროებით მიუწვდომელია. გთხოვთ გამოგვიგზავნოთ შეკვეთა WhatsApp-ით ან დაგვირეკოთ: 551 51 91 65",
+              "We couldn't send your order — the service is temporarily unavailable. Please send it via WhatsApp or call us: 551 51 91 65"],
+    GENERIC: ["შეკვეთა ვერ გაიგზავნა. გთხოვთ სცადოთ WhatsApp-ით ან დაგვირეკოთ: 551 51 91 65",
+              "Your order could not be sent. Please try WhatsApp or call us: 551 51 91 65"]
+  };
+  function apiMessage(code) {
+    var m = API_MESSAGES[code] || API_MESSAGES.GENERIC;
+    return t(m[0], m[1]);
+  }
 
   /* ---------------- state ---------------- */
   function read() {
@@ -357,8 +406,17 @@
     var s = document.getElementById("order-success"), g = document.querySelector(".checkout-grid");
     var e = document.getElementById("checkout-empty");
     if (s) {
+      var fromServer = (mode === "api" || mode === "api-quote");
       var ref = s.querySelector(".order-ref");
-      if (ref && orderRef) { ref.textContent = "#" + orderRef; ref.hidden = false; }
+      /* A number the server gave us is already in its final form. The
+         WhatsApp path still makes its own reference up, so that one keeps
+         the # in front of it. */
+      if (ref && orderRef) { ref.textContent = (fromServer ? "" : "#") + orderRef; ref.hidden = false; }
+      if (mode === "api-quote") {
+        setBiText(document.getElementById("os-text"),
+          "მადლობა! თქვენი შეკვეთა მიღებულია. ზოგიერთი პოზიციის ფასი ცალკე დაგითვლებათ — მალე დაგიკავშირდებით დადასტურებისა და მიწოდების დეტალებისთვის.",
+          "Thank you! Your order has been received. Some items will be priced separately, and we'll contact you shortly to confirm and arrange delivery.");
+      }
       if (mode === "wa") {
         /* WhatsApp opens in a new tab — we can't know the message was actually
            sent, so the cart stays saved and the copy says so honestly */
@@ -374,6 +432,72 @@
     if (g) g.style.display = "none";
     if (e) e.classList.remove("is-shown");
     window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  /* Send the cart to the order service and show the number it gives back.
+     Only codes and quantities leave the browser. Prices are never sent, and
+     would be ignored if they were. */
+  function placeOrder(btn) {
+    var f = readForm(); if (!validate(f)) return;
+
+    /* A few catalogue items have no article code yet. The service looks
+       everything up by code, so it could never find these. Say so plainly
+       rather than let the customer hit a confusing error. */
+    var noCode = items.filter(function (i) { return !i.code; });
+    if (noCode.length) {
+      fieldError(t("კალათაში არსებული ზოგიერთი პროდუქტის ონლაინ შეკვეთა ჯერ ვერ ხერხდება. გთხოვთ გამოგვიგზავნოთ შეკვეთა WhatsApp-ით.",
+                   "Some items in your cart cannot be ordered online yet. Please send your order via WhatsApp."));
+      return;
+    }
+
+    var base = apiBase();
+    if (!base) { fieldError(apiMessage("OFFLINE")); return; }
+
+    /* Change the label inside the button, not the button itself: writing to
+       the button's textContent would delete its icon. */
+    var label = btn.querySelector("span") || btn;
+    var original = label.textContent;
+    btn.disabled = true;
+    label.textContent = t("იგზავნება…", "Sending…");
+    function reset() { btn.disabled = false; label.textContent = original; }
+
+    /* Give up after 20 seconds rather than leave someone watching "Sending…"
+       for ever when the service is unreachable. */
+    var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
+
+    fetch(base + "/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        customer: { name: f.name, phone: f.phone, email: f.email, address: f.address, notes: f.notes },
+        items: items.map(function (i) { return { code: i.code, quantity: i.qty }; })
+      }),
+      signal: ctrl ? ctrl.signal : undefined
+    })
+      .then(function (r) {
+        return r.json()
+          .catch(function () { return null; })
+          .then(function (body) { return { ok: r.ok, body: body }; });
+      })
+      .then(function (res) {
+        clearTimeout(timer);
+        if (res.ok && res.body && res.body.success && res.body.order) {
+          orderRef = res.body.order.number;          // the real number, from the server
+          clear();
+          showSuccess(res.body.order.needs_quote ? "api-quote" : "api");
+          return;
+        }
+        fieldError(apiMessage(res.body && res.body.error && res.body.error.code));
+        reset();
+      })
+      .catch(function () {
+        /* No answer at all: service stopped, no internet, or the browser
+           blocked the request. This must never fail silently. */
+        clearTimeout(timer);
+        fieldError(apiMessage("OFFLINE"));
+        reset();
+      });
   }
 
   function wireCheckout() {
@@ -392,29 +516,7 @@
       window.open("https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
       showSuccess("wa");   // cart intentionally NOT cleared — see showSuccess()
     });
-    if (em) em.addEventListener("click", function () {
-      var f = readForm(); if (!validate(f)) return;
-      orderRef = orderRef || makeRef();
-      em.disabled = true; var label = em.textContent; em.textContent = t("იგზავნება…", "Sending…");
-      fetch(FORM_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          _subject: t("ახალი შეკვეთა — ვებსაიტი", "New order — website") + " · #" + orderRef,
-          _captcha: "false", _template: "table",
-          name: f.name, phone: f.phone, email: f.email, address: f.address,
-          notes: f.notes, order: orderText()
-        })
-      }).then(function (r) { return r.json().catch(function () { return {}; }); })
-        .then(function (d) {
-          if (d && (d.success === true || d.success === "true")) { clear(); showSuccess("email"); }
-          else { fieldError(t("ვერ გაიგზავნა. სცადეთ WhatsApp ან დაგვირეკეთ: 551 51 91 65",
-                              "Couldn't send. Try WhatsApp or call us: 551 51 91 65")); }
-        })
-        .catch(function () { fieldError(t("ვერ გაიგზავნა. სცადეთ WhatsApp ან დაგვირეკეთ: 551 51 91 65",
-                                          "Couldn't send. Try WhatsApp or call us: 551 51 91 65")); })
-        .then(function () { em.disabled = false; em.textContent = label; });
-    });
+    if (em) em.addEventListener("click", function () { placeOrder(em); });
   }
   function clear() { items = []; write(); renderAll(); }
 
